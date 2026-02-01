@@ -174,14 +174,14 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
       </div>
 
       {/* Action Button */}
-      <button
+      <Link
+        href={`/dashboard/klaim-garansi/${claim.id}`}
         data-testid={`claim-action-btn-${claim.id}`}
-        type="button"
         className="bg-primary px-5 py-3 text-secondary rounded-lg text-sm xl:text-base flex items-center gap-1 w-fit mt-auto hover:opacity-90 transition font-semibold"
       >
         <span>{config.buttonLabel}</span>
         <MdOutlineArrowRight />
-      </button>
+      </Link>
     </div>
   );
 }
