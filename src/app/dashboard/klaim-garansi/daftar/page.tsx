@@ -750,6 +750,47 @@ function ExampleImage({ title }: { title: string }) {
   );
 }
 
+// ============ SUCCESS NOTIFICATION COMPONENT ============
+function SuccessNotification({
+  onClose,
+}: {
+  onClose: () => void;
+}) {
+  return (
+    <div
+      data-testid="success-notification"
+      className="fixed top-20 right-5 z-50 bg-white rounded-lg shadow-lg p-4 max-w-md flex items-start gap-3 animate-in slide-in-from-right"
+    >
+      {/* Green Checkmark Icon */}
+      <div className="flex-shrink-0">
+        <div className="w-8 h-8 rounded-full bg-[#00DF80] flex items-center justify-center">
+          <IoCheckmarkCircle className="text-white text-xl" />
+        </div>
+      </div>
+
+      {/* Text Content */}
+      <div className="flex-1">
+        <h3 className="text-secondary font-bold text-base">
+          Pengajuan Klaim Berhasil
+        </h3>
+        <p className="text-secondary/70 text-sm mt-1">
+          Tim Dunlop akan melakukan verifikasi pengajuan Anda. Kami akan memberitahu anda segera.
+        </p>
+      </div>
+
+      {/* Close Button */}
+      <button
+        data-testid="close-notification-btn"
+        type="button"
+        onClick={onClose}
+        className="flex-shrink-0 text-secondary/50 hover:text-secondary transition"
+      >
+        <MdClose className="text-xl" />
+      </button>
+    </div>
+  );
+}
+
 // ============ MAIN PAGE COMPONENT ============
 export default function DaftarKlaimGaransiPage() {
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
