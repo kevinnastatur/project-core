@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaCheckCircle, FaPlus } from "react-icons/fa";
-import { MdOutlineArrowLeft, MdOutlineArrowRight, MdOutlineArrowDropDown } from "react-icons/md";
+import { MdOutlineArrowLeft, MdOutlineArrowRight, MdOutlineArrowDropDown, MdClose } from "react-icons/md";
 import { IoAlertCircle, IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 
 // ============ TYPES ============
 type StepNumber = 1 | 2 | 3;
