@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { FaPlus } from "react-icons/fa";
 import { MdOutlineArrowDropDown, MdOutlineArrowRight } from "react-icons/md";
 import StatusBadge from "@/components/common/StatusBadge";
+import Link from "next/link";
 
 // ============ TYPES ============
 type ClaimStatus =
