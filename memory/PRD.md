@@ -8,78 +8,73 @@
 
 ### Pilot 1 (Completed)
 **Scope:** Riwayat Klaim Garansi (List Page)
-**Files Created:**
-- `src/app/dashboard/klaim-garansi/page.tsx`
-- `src/components/common/StatusBadge.tsx`
+**Files:** `src/app/dashboard/klaim-garansi/page.tsx`, `src/components/common/StatusBadge.tsx`
 
 ### Pilot 2 (Completed)
 **Scope:** 3-Step Claim Submission Wizard
-**Files Created:**
-- `src/app/dashboard/klaim-garansi/daftar/page.tsx`
+**Files:** `src/app/dashboard/klaim-garansi/daftar/page.tsx`
 
 ### Pilot 3 (Completed)
 **Scope:** Claim Submission Success State
-**Files Modified:**
-- `src/app/dashboard/klaim-garansi/daftar/page.tsx`
+**Files:** Modified `src/app/dashboard/klaim-garansi/daftar/page.tsx`
 
-### Pilot 4 (Completed)
-**Scope:** Claim Detail Page (Read-only)
-**Files Created:**
-- `src/app/dashboard/klaim-garansi/[id]/page.tsx`
+### Pilot 4 (Completed - Superseded by Pilot 6)
+**Scope:** Initial Claim Detail Page (waiting/rejected states)
+**Files:** `src/app/dashboard/klaim-garansi/[id]/page.tsx`
 
 ### Pilot 5 (Completed)
 **Scope:** Ajukan Penjadwalan Klaim Garansi (Customer Flow)
-**Route:** `/dashboard/klaim-garansi/jadwal`
+**Files:** `src/app/dashboard/klaim-garansi/jadwal/page.tsx`
 
-**Files Created:**
-- `src/app/dashboard/klaim-garansi/jadwal/page.tsx` (22KB)
+### Pilot 6 (Completed)
+**Scope:** Detail Klaim Dijadwalkan / Verifikasi Stok (Customer View)
+**Route:** `/dashboard/klaim-garansi/[id]`
 
 **Files Modified:**
-- `src/app/dashboard/klaim-garansi/page.tsx` - Updated ClaimCard routing logic
+- `src/app/dashboard/klaim-garansi/[id]/page.tsx` (Complete rewrite - 18KB)
 
 **Features Implemented:**
 
-**Step 1 - Appointment Klaim Garansi:**
-- Province dropdown (DKI Jakarta, Jawa Barat, Jawa Tengah, Jawa Timur)
-- City dropdown (cascading, filtered by province)
-- Dunlop Shop dropdown (cascading, filtered by city)
-- Selected shop info card with address and phone
-- Date picker for appointment
-- **STATIC MAP PLACEHOLDER** (NO Google Maps/Mapbox/Leaflet)
-  - Grid pattern background
-  - Pin marker icon
-  - Shop info tooltip on selection
+**3-Step Progress Stepper:**
+1. Verifikasi Stok (Step 1) - Yellow active circle
+2. Klaim Garansi Dijadwalkan (Step 2) - Scheduled state
+3. Klaim Garansi Selesai (Step 3) - All steps completed with checkmarks
 
-**Step 2 - Konfirmasi Klaim:**
-- Claim information (ID, Warranty ID, Date, Odometer)
-- Dunlop Shop information (Name, Phone, Address)
-- Appointment date
-- User information (all read-only)
+**Status Variants (ID-based mock data):**
+- ID `1` → verifikasi_stok: Progress at Step 1, notes empty
+- ID `3` → dijadwalkan: Progress at Step 2, notes empty  
+- ID `4` → selesai: Progress at Step 3, completion notes shown
+- ID `2` → rejected: No stepper, red banner, rejection reason
 
-**Success State:**
-- Success notification popup
-- Auto-redirect after 3 seconds
-- Manual close redirects immediately
+**Page Sections:**
+1. Status Progress Stepper (read-only, 3 steps)
+2. Informasi Klaim Garansi (ID, Warranty ID, Store, Date, Time, Odometer)
+3. Informasi Pengguna (User details)
+4. Bukti Kerusakan Ban (Tire damage image previews)
+5. Bukti Odometer Kendaraan (Odometer image previews)
+6. Detail Informasi Garansi Ban (Warranty status card + tire specs)
+7. Catatan Klaim Garansi (Notes section)
+8. Help Section ("Butuh Bantuan?")
 
-**Routing:**
-- "Terverifikasi" cards → /dashboard/klaim-garansi/jadwal
-- "Stok Tidak Tersedia" cards → /dashboard/klaim-garansi/jadwal
-- Other statuses → /dashboard/klaim-garansi/[id]
+**Warranty Status Cards:**
+- Active: Green checkmark, warranty end date
+- Claimed/Selesai: Red alert, claim date shown
+- Rejected: Red alert, Syarat & Ketentuan link
+
+**New Tire Info (for completed claims):**
+- Shows new barcode and DOT number after replacement
+
+## Status
+- TypeScript: ✅ No errors in target files
+- Visual: Matches Figma designs
+- Scope: Within pilot boundaries
 
 ## Scope Compliance Checklist
-
-✅ Only touched allowed files
-✅ Used local mock data only
-✅ No API calls or backend integration
-✅ No new dependencies added
-✅ Map is STATIC placeholder only (NO Google Maps, Mapbox, Leaflet)
-✅ Desktop-only layout
-✅ No responsive breakpoints
-✅ TypeScript: No errors in target files
-✅ No legacy code modified
-✅ Minimal diff, merge-ready
-
-## Notes
-- All dropdowns cascade properly (Province → City → Shop)
-- Date picker uses native HTML5 date input
-- Help section included at bottom of page
+- ✅ Only modified allowed file
+- ✅ Pure read-only UI
+- ✅ Mock data only (no API)
+- ✅ No edit/mutation actions
+- ✅ Desktop-only layout
+- ✅ No new dependencies
+- ✅ No legacy code modified outside scope
+- ✅ Minimal diff, merge-ready
