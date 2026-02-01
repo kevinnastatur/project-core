@@ -793,6 +793,7 @@ function SuccessNotification({
 
 // ============ MAIN PAGE COMPONENT ============
 export default function DaftarKlaimGaransiPage() {
+  const router = useRouter();
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
   const [selectedWarranty, setSelectedWarranty] = useState<string | null>(null);
   const [selectedTires, setSelectedTires] = useState<string[]>([]);
@@ -804,6 +805,7 @@ export default function DaftarKlaimGaransiPage() {
     kerusakan: null,
     angle: null,
   });
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleWarrantySelect = (id: string) => {
     setSelectedWarranty(id);
@@ -834,6 +836,27 @@ export default function DaftarKlaimGaransiPage() {
       setCurrentStep((prev) => (prev - 1) as StepNumber);
     }
   };
+
+  const handleSubmit = () => {
+    // Show success notification
+    setShowSuccess(true);
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+    // Redirect to claim history page
+    router.push("/dashboard/klaim-garansi");
+  };
+
+  // Auto-redirect after 3 seconds when success notification is shown
+  useEffect(() => {
+    if (showSuccess) {
+      const timer = setTimeout(() => {
+        router.push("/dashboard/klaim-garansi");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [showSuccess, router]);
 
   const canProceed = () => {
     switch (currentStep) {
