@@ -873,6 +873,9 @@ export default function DaftarKlaimGaransiPage() {
 
   return (
     <div data-testid="daftar-klaim-page" className="flex flex-col gap-5 w-full p-5 text-white min-h-125">
+      {/* Success Notification */}
+      {showSuccess && <SuccessNotification onClose={handleCloseSuccess} />}
+
       {/* Breadcrumb */}
       <div className="text-sm text-white/70">
         <span>Klaim Garansi</span>
