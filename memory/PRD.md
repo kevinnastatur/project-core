@@ -24,42 +24,62 @@
 
 ### Pilot 4 (Completed)
 **Scope:** Claim Detail Page (Read-only)
-**Route:** `/dashboard/klaim-garansi/[id]`
-
 **Files Created:**
 - `src/app/dashboard/klaim-garansi/[id]/page.tsx`
 
+### Pilot 5 (Completed)
+**Scope:** Ajukan Penjadwalan Klaim Garansi (Customer Flow)
+**Route:** `/dashboard/klaim-garansi/jadwal`
+
+**Files Created:**
+- `src/app/dashboard/klaim-garansi/jadwal/page.tsx` (22KB)
+
 **Files Modified:**
-- `src/app/dashboard/klaim-garansi/page.tsx` - Updated action button to Link
+- `src/app/dashboard/klaim-garansi/page.tsx` - Updated ClaimCard routing logic
 
 **Features Implemented:**
-- Two visual states using mock data:
-  1. **Waiting/Verification State (id=1):**
-     - Yellow status banner
-     - "Status Garansi Ban Aktif" with green checkmark
-     - Notes: "Tidak Ada Catatan"
-  2. **Rejected State (id=2):**
-     - Red/Orange status banner with rejection message
-     - "Klaim Ditolak" status with red alert icon
-     - Rejection reason in notes section
-     - "Syarat & Ketentuan" link
 
-**Page Sections:**
-- Status Banner (state-dependent color/message)
-- Informasi Klaim Garansi (ID, Warranty ID, Date, Odometer)
-- Informasi Pengguna (User details - read-only)
-- Bukti Kerusakan Ban (Image previews)
-- Bukti Odometer Kendaraan (Image previews)
-- Detail Informasi Garansi Ban (Tire details + status card)
-- Catatan Klaim Garansi (Notes section)
+**Step 1 - Appointment Klaim Garansi:**
+- Province dropdown (DKI Jakarta, Jawa Barat, Jawa Tengah, Jawa Timur)
+- City dropdown (cascading, filtered by province)
+- Dunlop Shop dropdown (cascading, filtered by city)
+- Selected shop info card with address and phone
+- Date picker for appointment
+- **STATIC MAP PLACEHOLDER** (NO Google Maps/Mapbox/Leaflet)
+  - Grid pattern background
+  - Pin marker icon
+  - Shop info tooltip on selection
 
-## Status
-- TypeScript: ✅ No errors in target files
-- Visual: Matches Figma designs
-- Scope: Within pilot boundaries
+**Step 2 - Konfirmasi Klaim:**
+- Claim information (ID, Warranty ID, Date, Odometer)
+- Dunlop Shop information (Name, Phone, Address)
+- Appointment date
+- User information (all read-only)
+
+**Success State:**
+- Success notification popup
+- Auto-redirect after 3 seconds
+- Manual close redirects immediately
+
+**Routing:**
+- "Terverifikasi" cards → /dashboard/klaim-garansi/jadwal
+- "Stok Tidak Tersedia" cards → /dashboard/klaim-garansi/jadwal
+- Other statuses → /dashboard/klaim-garansi/[id]
+
+## Scope Compliance Checklist
+
+✅ Only touched allowed files
+✅ Used local mock data only
+✅ No API calls or backend integration
+✅ No new dependencies added
+✅ Map is STATIC placeholder only (NO Google Maps, Mapbox, Leaflet)
+✅ Desktop-only layout
+✅ No responsive breakpoints
+✅ TypeScript: No errors in target files
+✅ No legacy code modified
+✅ Minimal diff, merge-ready
 
 ## Notes
-- All data uses local mock (no API)
-- Read-only page (no edit capability)
-- Desktop-only layout
-- No new dependencies added
+- All dropdowns cascade properly (Province → City → Shop)
+- Date picker uses native HTML5 date input
+- Help section included at bottom of page
