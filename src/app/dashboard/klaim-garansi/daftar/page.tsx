@@ -942,7 +942,7 @@ export default function DaftarKlaimGaransiPage() {
         <button
           data-testid="next-step-btn"
           type="button"
-          onClick={handleNext}
+          onClick={currentStep === 3 ? handleSubmit : handleNext}
           disabled={!canProceed()}
           className={`
             flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1
