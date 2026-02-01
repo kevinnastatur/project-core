@@ -271,13 +271,14 @@ export default function KlaimGaransiPage() {
         className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 font-bold"
       >
         {/* CTA Card - Add New Claim */}
-        <div
+        <Link
+          href="/dashboard/klaim-garansi/daftar"
           data-testid="add-claim-card"
           className="bg-input border-2 border-input-border cursor-pointer border-dashed hover:border-primary transition-all duration-300 rounded-lg flex flex-col gap-2 p-5 justify-center items-center text-primary text-lg xl:text-xl h-75 md:h-75 xl:h-80 2xl:h-75"
         >
           <FaPlus />
           <p>Klaim Garansi Ban Anda</p>
-        </div>
+        </Link>
 
         {/* Claim Cards */}
         {filteredClaims.map((claim) => (
