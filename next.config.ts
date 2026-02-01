@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 // Cache invalidation: 2026-01-30T12:50:00Z
 const nextConfig: NextConfig = {
-  basePath: '/id/warranty',
+  basePath: process.env.NODE_ENV === 'production' ? '/id/warranty' : undefined, // penyebab e pin, routing e di paksa ada /id/warranty
   output: "standalone",
   images: {
     remotePatterns: [
@@ -22,3 +22,8 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+
+
+
+// sedangkan cara routing e next iku berdasarkan folder
+// misal src/app/dashboard jadine localhost:3000/dashboard

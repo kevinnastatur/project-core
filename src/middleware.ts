@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 // BasePath for proxy deployment (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
+// const BASE_PATH = "/id/warranty";
+const BASE_PATH = "";
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -45,3 +46,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: ["/:path*"],
 };
+
+
+// iki gawe middleware ngatur halaman per role dan authentication
