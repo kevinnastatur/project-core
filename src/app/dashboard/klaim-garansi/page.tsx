@@ -121,6 +121,14 @@ const MOCK_CLAIMS: ClaimItem[] = [
 function ClaimCard({ claim }: { claim: ClaimItem }) {
   const config = STATUS_CONFIG[claim.status];
 
+  // Route to scheduling page for verified and outOfStock status, detail page for others
+  const getActionHref = () => {
+    if (claim.status === "verified" || claim.status === "outOfStock") {
+      return "/dashboard/klaim-garansi/jadwal";
+    }
+    return `/dashboard/klaim-garansi/${claim.id}`;
+  };
+
   return (
     <div
       data-testid={`claim-card-${claim.id}`}
@@ -175,7 +183,7 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
 
       {/* Action Button */}
       <Link
-        href={`/dashboard/klaim-garansi/${claim.id}`}
+        href={getActionHref()}
         data-testid={`claim-action-btn-${claim.id}`}
         className="bg-primary px-5 py-3 text-secondary rounded-lg text-sm xl:text-base flex items-center gap-1 w-fit mt-auto hover:opacity-90 transition font-semibold"
       >
