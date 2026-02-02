@@ -145,11 +145,13 @@ export default function NavbarUser() {
       try {
         const res = await getNotifIndexCustomer();
 
-        const notifArray = Object.values(res.data);
+        // Handle development mode where res might not have data property
+        const notifArray = res?.data ? Object.values(res.data) : [];
         setNotifData(notifArray);
         setVisibleCount(PAGE_SIZE);
       } catch (error) {
         console.error(error);
+        setNotifData([]);
       }
     };
 
@@ -264,10 +266,9 @@ export default function NavbarUser() {
               pathname === item.hover || pathname.startsWith(item.hover + "/");
 
             return (
-              <div className="flex flex-col relative ">
+              <div key={item.id} className="flex flex-col relative ">
                 <Link
                   href={item.link}
-                  key={item.id}
                   className={`font-semibold flex gap-2 items-center hover:bg-[#333333] px-5 py-3 rounded-lg  ${
                     isActive ? "bg-[#333333]" : ""
                   }`}

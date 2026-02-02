@@ -42,10 +42,9 @@ export default function NavbarMobile() {
         {Tab.map((item) => {
           const isActive = pathname === item.link;
           return (
-            <div className="flex flex-col gap-0 relative w-full mx-auto">
+            <div key={item.id} className="flex flex-col gap-0 relative w-full mx-auto">
               {" "}
               <Link
-                key={item.id}
                 href={item.link}
                 className={`font-semibold min-w-15  flex flex-col gap-2 items-center py-3 rounded-lg transition
               ${isActive ? "text-[#333333]" : "text-[#6A6A6A]"}

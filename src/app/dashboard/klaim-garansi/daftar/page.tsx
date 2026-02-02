@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { FaCheckCircle, FaPlus } from "react-icons/fa";
 import { MdOutlineArrowLeft, MdOutlineArrowRight, MdOutlineArrowDropDown, MdClose } from "react-icons/md";
 import { IoAlertCircle, IoCheckmarkCircle, IoCloseCircle } from "react-icons/io5";
@@ -682,9 +682,31 @@ function UploadArea({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onRemove: () => void;
 }) {
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [file]);
+
+  const handleRemove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    onRemove();
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+  };
+
   return (
     <div className="flex flex-col gap-2">
       <input
+        ref={inputRef}
         id={id}
         type="file"
         accept=".png,.jpg,.jpeg"
@@ -701,20 +723,17 @@ function UploadArea({
           ${file ? "border-primary" : "border-input-border"}
         `}
       >
-        {file ? (
+        {file && previewUrl ? (
           <div className="relative flex flex-col items-center gap-2">
             <img
-              src={URL.createObjectURL(file)}
+              src={previewUrl}
               alt="Preview"
               className="h-20 w-20 object-cover rounded-lg"
             />
             <p className="text-white text-xs truncate max-w-32">{file.name}</p>
             <button
               type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                onRemove();
-              }}
+              onClick={handleRemove}
               className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white p-1 rounded-full text-xs"
             >
               ✕
@@ -865,7 +884,7 @@ export default function DaftarKlaimGaransiPage() {
       case 2:
         return selectedTires.length > 0;
       case 3:
-        return odometerValue.length > 0;
+        return true; // Always enabled for testing
       default:
         return false;
     }

@@ -1,7 +1,7 @@
 "use client";
 
 // BasePath for assets (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
+// const BASE_PATH = "/id/warranty";
 export default function ResetPasswordSuccess() {
   return (
     <main className="flex flex-col py-10 lg:py-0 gap-5 justify-center lg:flex-row lg:justify-between w-full h-full min-h-screen  2xl:w-480 mx-auto ">
@@ -24,7 +24,7 @@ export default function ResetPasswordSuccess() {
       <div className="w-full lg:w-[50%] lg:h-screen p-3 hidden lg:block">
         <div className="  w-full h-full   rounded-2xl">
           <Image
-            src={`${BASE_PATH}/assets/auth/images2.png`}
+            src="/assets/auth/images2.png"
             alt="Register Image"
             width={9999}
             height={9999}

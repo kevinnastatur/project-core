@@ -15,7 +15,7 @@ import LoadingOverlay from "../ui/LoadingOverlay";
 import { useRouter } from "next/navigation";
 
 // BasePath for assets (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
+// const BASE_PATH = "/id/warranty";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -78,7 +78,7 @@ export default function RegisterForm() {
           <div className="flex flex-col gap-3 w-full px-5 lg:p-0 lg:w-[85%] xl:lg:w-[65%] justify-center text-white ">
             <div className=" w-35 xl:w-45 h-full rounded-2xl">
               <Image
-                src={`${BASE_PATH}/assets/logo-default.svg`}
+                src="/assets/logo-default.svg"
                 alt="dunlop-logo"
                 width={9999}
                 height={9999}
@@ -148,7 +148,7 @@ export default function RegisterForm() {
         <div className="w-full lg:w-[50%] lg:h-screen p-3 hidden lg:block">
           <div className="  w-full h-full   rounded-2xl">
             <Image
-              src={`${BASE_PATH}/assets/auth/images2.png`}
+              src="/assets/auth/images2.png"
               alt="Register Image"
               width={9999}
               height={9999}

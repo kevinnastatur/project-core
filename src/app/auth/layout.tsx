@@ -7,15 +7,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="id">
-      <body>
-        <Toaster position="top-right" richColors />
-        {/* <Script
-          src="https://challenges.cloudflare.com/turnstile/v0/api.js"
-          strategy="afterInteractive"
-        /> */}
-        {children}
-      </body>
-    </html>
+    <>
+      <Toaster position="top-right" richColors />
+      {/* <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js"
+        strategy="afterInteractive"
+      /> */}
+      {children}
+    </>
   );
 }

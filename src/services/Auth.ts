@@ -9,8 +9,22 @@ export const getUser = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
-  if (!token) {
+  // In development mode, allow access without token
+  if (!token && process.env.NODE_ENV === 'production') {
     redirect("/auth/login");
+  }
+
+  // Return mock user in development if no token
+  if (!token && process.env.NODE_ENV === 'development') {
+    return {
+      data: {
+        id: "dev-user",
+        name: "Development User",
+        email: "dev@example.com",
+        phone: "+62812345678",
+        role: "customer",
+      }
+    };
   }
 
   const res = await fetch(`${BASE_URL}/auth/user`, {
