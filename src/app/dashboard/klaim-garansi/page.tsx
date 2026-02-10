@@ -5,21 +5,26 @@ import { FaPlus } from "react-icons/fa";
 import { MdOutlineArrowDropDown, MdOutlineArrowRight } from "react-icons/md";
 import StatusBadge from "@/components/common/StatusBadge";
 import Link from "next/link";
+import { getWarrantyClaimIndex } from "@/services/WarrantlyClaim"
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
 
 // ============ TYPES ============
 type ClaimStatus =
+  | "pending"
+  | "rejectAdmin"
+  | "approveAdmin"
+  | "stockReady"
+  | "stockEmpty"
+  | "apptReq"
   | "scheduled"
-  | "verified"
-  | "outOfStock"
-  | "adminVerification"
-  | "rejectedDunlop"
-  | "rejectedShop";
+  | "completed"
+  | "rejectStore";
 
 interface ClaimItem {
-  id: string;
-  claimId: string;
-  plateNumber: string;
-  scheduledDate: string | null;
+  id: number;
+  claim_submission_code: string;
+  plate_number: string;
+  appointment_date: string;
   status: ClaimStatus;
 }
 
@@ -27,106 +32,101 @@ interface ClaimItem {
 const STATUS_CONFIG: Record<
   ClaimStatus,
   {
+    id: number;
     label: string;
     badgeVariant: ClaimStatus;
     buttonLabel: string;
     tooltip: string;
   }
 > = {
+  pending: {
+    id: 0,
+    label: "Verifikasi Administrasi",
+    badgeVariant: "pending",
+    buttonLabel: "Lihat Detail",
+    tooltip: "Sedang dalam verifikasi administrasi",
+  },
+  rejectAdmin: {
+    id: 1,
+    label: "Ditolak Oleh Dunlop",
+    badgeVariant: "rejectAdmin",
+    buttonLabel: "Klaim Ditolak",
+    tooltip: "Klaim ditolak oleh Dunlop",
+  },
+  approveAdmin: {
+    id: 2,
+    label: "Terverifikasi",
+    badgeVariant: "approveAdmin",
+    buttonLabel: "Ajukan Penjadwalan",
+    tooltip: "Klaim telah terverifikasi",
+  },
+  stockReady: {
+    id: 3,
+    label: "Stok Tersedia",
+    badgeVariant: "stockReady",
+    buttonLabel: "Lihat Detail",
+    tooltip: "Stok produk tersedia",
+  },
+  stockEmpty: {
+    id: 4,
+    label: "Stok Tidak Tersedia",
+    badgeVariant: "stockEmpty",
+    buttonLabel: "Ajukan Penjadwalan Ulang",
+    tooltip: "Stok produk tidak tersedia",
+  },
+  apptReq: {
+    id: 5,
+    label: "Verifikasi Stok",
+    badgeVariant: "apptReq",
+    buttonLabel: "Lihat Detail",
+    tooltip: "Sedang dalam verifikasi stok",
+  },
   scheduled: {
+    id: 6,
     label: "Dijadwalkan",
     badgeVariant: "scheduled",
     buttonLabel: "Lihat Detail",
     tooltip: "Klaim telah dijadwalkan",
   },
-  verified: {
-    label: "Terverifikasi",
-    badgeVariant: "verified",
-    buttonLabel: "Ajukan Penjadwalan",
-    tooltip: "Klaim telah terverifikasi",
-  },
-  outOfStock: {
-    label: "Stok Tidak Tersedia",
-    badgeVariant: "outOfStock",
-    buttonLabel: "Ajukan Penjadwalan Ulang",
-    tooltip: "Stok produk tidak tersedia",
-  },
-  adminVerification: {
-    label: "Verifikasi Administrasi",
-    badgeVariant: "adminVerification",
+  completed: {
+    id: 7,
+    label: "Klaim Selesai",
+    badgeVariant: "completed",
     buttonLabel: "Lihat Detail",
-    tooltip: "Sedang dalam verifikasi administrasi",
+    tooltip: "Klaim telah selesai",
   },
-  rejectedDunlop: {
-    label: "Ditolak Oleh Dunlop",
-    badgeVariant: "rejectedDunlop",
-    buttonLabel: "Klaim Ditolak",
-    tooltip: "Klaim ditolak oleh Dunlop",
-  },
-  rejectedShop: {
+  rejectStore: {
+    id: 8,
     label: "Ditolak Oleh Dunlop Shop",
-    badgeVariant: "rejectedShop",
-    buttonLabel: "Klaim Ditolak",
+    badgeVariant: "rejectStore",
+    buttonLabel: "Lihat Detail",
     tooltip: "Klaim ditolak oleh Dunlop Shop",
   },
 };
 
-// ============ MOCK DATA ============
-const MOCK_CLAIMS: ClaimItem[] = [
-  {
-    id: "1",
-    claimId: "CW-123912821",
-    plateNumber: "B 2025 DUN",
-    scheduledDate: "3 April 2026, 14:00",
-    status: "scheduled",
-  },
-  {
-    id: "2",
-    claimId: "CW-123912821",
-    plateNumber: "B 2025 DUN",
-    scheduledDate: "3 April 2026, 14:00",
-    status: "verified",
-  },
-  {
-    id: "3",
-    claimId: "CW-123912821",
-    plateNumber: "B 2025 DUN",
-    scheduledDate: null,
-    status: "outOfStock",
-  },
-  {
-    id: "4",
-    claimId: "CW-123912821",
-    plateNumber: "B 2025 DUN",
-    scheduledDate: null,
-    status: "adminVerification",
-  },
-  {
-    id: "5",
-    claimId: "CW-123912821",
-    plateNumber: "B 2025 DUN",
-    scheduledDate: null,
-    status: "rejectedDunlop",
-  },
-  {
-    id: "6",
-    claimId: "CW-123912821",
-    plateNumber: "B 2025 DUN",
-    scheduledDate: "3 April 2026, 14:00",
-    status: "rejectedShop",
-  },
-];
+const STATUS_NUMBER_MAP: Record<number, ClaimStatus> = {
+  0: "pending",
+  1: "rejectAdmin",
+  2: "approveAdmin",
+  3: "stockReady",
+  4: "stockEmpty",
+  5: "apptReq",
+  6: "scheduled",
+  7: "completed",
+  8: "rejectStore",
+};
+
 
 // ============ CLAIM CARD COMPONENT ============
 function ClaimCard({ claim }: { claim: ClaimItem }) {
   const config = STATUS_CONFIG[claim.status];
 
-  // Route to scheduling page for verified and outOfStock status, detail page for others
+  // Route to scheduling page for approveAdmin and stockEmpty status, detail page for others
   const getActionHref = () => {
-    if (claim.status === "verified" || claim.status === "outOfStock") {
-      return "/dashboard/klaim-garansi/jadwal";
+    if (claim.status === "approveAdmin" || claim.status === "stockEmpty") {
+      return `/dashboard/klaim-garansi/jadwal?claimId=${claim.id}`;
     }
-    return `/dashboard/klaim-garansi/${claim.id}`;
+    return `/dashboard/klaim-garansi/detail/${claim.id}`;
   };
 
   return (
@@ -141,6 +141,7 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
     >
       {/* Status Badge */}
       <StatusBadge
+        key={config.id}
         label={config.label}
         variant={config.badgeVariant}
         tooltip={config.tooltip}
@@ -155,7 +156,7 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
               ID Klaim Garansi
             </p>
             <p className="text-base xl:text-lg text-white font-semibold">
-              {claim.claimId}
+              {claim.claim_submission_code}
             </p>
           </div>
           <div className="flex flex-col gap-1">
@@ -163,7 +164,7 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
               Plat Nomor
             </p>
             <p className="text-base xl:text-lg text-white font-semibold">
-              {claim.plateNumber}
+              {claim.plate_number}
             </p>
           </div>
         </div>
@@ -175,7 +176,7 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
               Jadwal Kedatangan
             </p>
             <p className="text-base xl:text-lg text-white font-semibold">
-              {claim.scheduledDate || "-"}
+              {claim.appointment_date || "-"}
             </p>
           </div>
         </div>
@@ -194,10 +195,34 @@ function ClaimCard({ claim }: { claim: ClaimItem }) {
   );
 }
 
+interface KlaimGaransiApi {
+  id: number;
+  claim_submission_code: string;
+  plate_number: string;
+  appointment_date: string;
+  status: number; // ⬅️ dari API
+}
+
+
+interface KlaimGaransiData {
+  id: number;
+  claim_submission_code: string;
+  plate_number: string;
+  appointment_date: string;
+  status: ClaimStatus;
+}
+
 // ============ MAIN PAGE COMPONENT ============
 export default function KlaimGaransiPage() {
+  const [data, setData] = useState<KlaimGaransiData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState("");
+  const [perPage, setPerPage] = useState<10 | 20 | 30>(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState<any>(null);
   const [open, setOpen] = useState(false);
-  const [filterStatus, setFilterStatus] = useState<ClaimStatus | null>(null);
+  const [filterStatus, setFilterStatus] = useState<ClaimStatus | ''>('');
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   // Close dropdown on outside click
@@ -214,12 +239,41 @@ export default function KlaimGaransiPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Filter claims based on selected status
-  const filteredClaims = filterStatus
-    ? MOCK_CLAIMS.filter((c) => c.status === filterStatus)
-    : MOCK_CLAIMS;
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Convert selected status key to numeric status id expected by the API
+        const statusParam = filterStatus && filterStatus !== ''
+          ? String(STATUS_CONFIG[filterStatus as ClaimStatus].id)
+          : "";
+
+        const res = await getWarrantyClaimIndex(page, perPage, search, statusParam);
+        if (res.success && res.data) {
+          const mappedData: KlaimGaransiData[] =
+            res.data.data?.map((item: KlaimGaransiApi) => ({
+              ...item,
+              status: STATUS_NUMBER_MAP[item.status] ?? "pending",
+            })) ?? [];
+
+          setData(mappedData);
+          setPagination(res.data);
+          setTotalPages(res.data.last_page ?? 1);
+        }
+      } catch (error) {
+        console.error(error);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, search, perPage, filterStatus]);
 
   return (
+    <>
+    <LoadingOverlay show={loading} />
     <div
       data-testid="klaim-garansi-page"
       className="flex flex-col gap-5 w-full p-5 text-white min-h-125"
@@ -235,7 +289,11 @@ export default function KlaimGaransiPage() {
             onClick={() => setOpen((p) => !p)}
             className="bg-primary px-5 py-3 text-secondary rounded-lg flex items-center gap-1"
           >
-            <p>Urutkan Berdasarkan Status</p>
+            <p>
+              {filterStatus
+                ? STATUS_CONFIG[filterStatus as ClaimStatus].label
+                : "Urutkan Berdasarkan Status"}
+            </p>
             <MdOutlineArrowDropDown
               className={`transition-transform ${open ? "rotate-180" : ""}`}
             />
@@ -249,7 +307,7 @@ export default function KlaimGaransiPage() {
               <button
                 data-testid="filter-option-all"
                 onClick={() => {
-                  setFilterStatus(null);
+                  setFilterStatus('');
                   setOpen(false);
                 }}
                 className="w-full text-left px-4 py-3 hover:bg-gray-100 rounded-t-lg"
@@ -290,10 +348,11 @@ export default function KlaimGaransiPage() {
         </Link>
 
         {/* Claim Cards */}
-        {filteredClaims.map((claim) => (
+        {data.length > 0 ? data.map((claim) => (
           <ClaimCard key={claim.id} claim={claim} />
-        ))}
+        )) : ''}
       </div>
     </div>
+    </>
   );
 }

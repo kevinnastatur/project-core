@@ -94,18 +94,51 @@ export const useWarrantyStore = create<WarrantyFormState>()(
       /* ================= TIRE HANDLERS ================= */
       addTire: () =>
         set((state) => {
-          if (state.tires.length >= 5) return state; // ⛔ MAX 5
+          if (state.tires.length >= 5) return state;
+
+          const firstTire = state.tires[0];
+
           return {
-            tires: [...state.tires, { ...emptyTire }],
+            tires: [
+              ...state.tires,
+              {
+                ...emptyTire,
+                tirestype: firstTire.tirestype,
+                tiresize: firstTire.tiresize,
+              },
+            ],
           };
         }),
 
       updateTire: (index, field, value) =>
-        set((state) => ({
-          tires: state.tires.map((tire, i) =>
-            i === index ? { ...tire, [field]: value } : tire
-          ),
-        })),
+        set((state) => {
+          const updatedTires = [...state.tires];
+
+          // update tire yg diubah
+          updatedTires[index] = {
+            ...updatedTires[index],
+            [field]: value,
+          };
+
+          /**
+           * AUTO FILL
+           * - hanya dari ban pertama
+           * - hanya untuk tirestype & tiresize
+           * - hanya mengisi kalau ban berikutnya masih kosong
+           */
+          if (index === 0 && (field === "tirestype" || field === "tiresize")) {
+            for (let i = 1; i < updatedTires.length; i++) {
+              if (!updatedTires[i][field]) {
+                updatedTires[i] = {
+                  ...updatedTires[i],
+                  [field]: value,
+                };
+              }
+            }
+          }
+
+          return { tires: updatedTires };
+        }),
 
       removeTire: (index) =>
         set((state) => {

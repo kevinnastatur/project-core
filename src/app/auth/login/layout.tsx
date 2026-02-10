@@ -3,22 +3,27 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Login | Dunlop Warranty System",
   description:
-    "Login ke sistem Dunlop Warranty untuk mengelola garansi kendaraan, melihat status klaim, dan memperbarui data Anda.",
-  robots:
-    process.env.NEXT_PUBLIC_ENV === "production"
-      ? "noindex, nofollow"
-      : "index, follow",
+    "Website Dunlop Warranty dirancang untuk memudahkan pengguna produk Dunlop dalam mengakses layanan purna jual seperti permintaan pendaftaran warranty, service berkala, & claim garansi.",
   openGraph: {
     title: "Login | Dunlop Warranty System",
     description:
-      "Masuk ke Dunlop Warranty System untuk mengakses layanan garansi kendaraan Anda secara aman.",
+      "Website Dunlop Warranty dirancang untuk memudahkan pengguna produk Dunlop dalam mengakses layanan purna jual seperti permintaan pendaftaran warranty, service berkala, & claim garansi.",
+    images: [
+      {
+        url: `${process.env.NEXT_PUBLIC_BASE_PATH}/assets/auth/images3.jpeg`,
+        width: 1200,
+        height: 630,
+        alt: "Login | Dunlop Warranty System",
+      },
+    ],
     type: "website",
   },
   twitter: {
     card: "summary",
     title: "Login | Dunlop Warranty System",
     description:
-      "Masuk ke Dunlop Warranty System untuk mengakses layanan garansi kendaraan Anda.",
+      "Website Dunlop Warranty dirancang untuk memudahkan pengguna produk Dunlop dalam mengakses layanan purna jual seperti permintaan pendaftaran warranty, service berkala, & claim garansi.",
+    images: [`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/auth/images3.jpeg`],
   },
 };
 

@@ -45,7 +45,7 @@ export default function RegistrationTireWarranty() {
           </div>
         )}
         <div className="w-full flex justify-center">
-          <div className="w-full md:w-[80%] relative">
+          <div className="w-full md:w-[80%] relative h-25">
             <div className="flex items-start md:items-center justify-between font-bold">
               {["01", "02", "03"].map((step, i) => {
                 const status = getStepStatus(i, currentStep);
@@ -108,7 +108,7 @@ export default function RegistrationTireWarranty() {
             </div>
 
             {/* Line Progress */}
-            <div className="flex justify-between items-center -mt-21 md:-mt-17 px-[14%] z-0">
+            <div className="flex justify-between items-center absolute bottom-[70%] w-full px-[14%] z-10">
               {[1, 2].map((line) => (
                 <div
                   key={line}

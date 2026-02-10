@@ -13,9 +13,6 @@ import {
   MdOutlineLogout,
 } from "react-icons/md";
 import { CgMenuGridO } from "react-icons/cg";
-
-// BasePath for assets (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
 import { CiDiscount1, CiImageOn } from "react-icons/ci";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { destroyCookie } from "nookies";
@@ -59,6 +56,7 @@ export default function AdminLeftNavbar() {
   const toggle = useSidebarStore((s) => s.toggle);
   const { total } = useRegisterLeadsHook();
   const [registrasiGaransi, setRegistrasiGaransi] = useState<boolean>(false);
+  const [klaimGaransi, setKlaimGaransi] = useState<boolean>(false);
   const [bannerPromotion, setBannerPromotion] = useState<boolean>(false);
 
   const HandleLogout = () => {
@@ -71,7 +69,7 @@ export default function AdminLeftNavbar() {
     showSuccessToast("Success", "Anda berhasil logout");
 
     setTimeout(() => {
-      window.location.replace("/auth/login");
+      window.location.reload();
     }, 1500);
   };
 
@@ -83,7 +81,7 @@ export default function AdminLeftNavbar() {
           <div className="flex items-center gap-5 ">
             <div className=" w-35 xl:w-45 h-full rounded-2xl">
               <Image
-                src={`${BASE_PATH}/assets/logo-default.svg`}
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/logo-default.svg`}
                 alt="dunlop-logo"
                 width={1000}
                 height={1000}
@@ -154,6 +152,78 @@ export default function AdminLeftNavbar() {
                     <div className="flex items-center gap-3">
                       <GoDatabase />
                       <p>Master Data</p>
+                    </div>
+                  </Link>
+                </div>
+              )}
+              <div className="w-full h-px bg-input my-3"></div>
+              {/* Klaim Garansi */}
+              <button
+                onClick={() => setKlaimGaransi(!klaimGaransi)}
+                className="flex items-center justify-between gap-0 py-2 w-full px-3 rounded-lg transition-all duration-300 hover:bg-primary hover:text-secondary cursor-pointer"
+              >
+                <div className="flex items-center gap-3">
+                  <LuShield />
+                  <p>Klaim Garansi</p>
+                </div>
+                {klaimGaransi ? (
+                  <MdOutlineArrowDropUp />
+                ) : (
+                  <MdOutlineArrowDropDown />
+                )}
+              </button>
+              {klaimGaransi && (
+                <div className="flex flex-col gap-2 items-start w-full transition-all duration-500 ease-in-out">
+                  <Link
+                    href="/admin/dashboard/klaim-garansi/pengajuan"
+                    className={`flex items-center justify-between gap-3 py-2 w-full px-3 rounded-lg transition-all duration-300 ${
+                      pathname.startsWith("/admin/dashboard/klaim-garansi/pengajuan")
+                        ? "link-active"
+                        : "hover:bg-primary hover:text-secondary"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <IoPersonAddOutline />
+                      <p>Pengajuan</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/admin/dashboard/klaim-garansi/appointment"
+                    className={`flex items-center justify-between gap-3 py-2 w-full px-3 rounded-lg transition-all duration-300 ${
+                      pathname.startsWith("/admin/dashboard/klaim-garansi/appointment")
+                        ? "link-active"
+                        : "hover:bg-primary hover:text-secondary"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <IoPersonAddOutline />
+                      <p>Appointment</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/admin/dashboard/klaim-garansi/master-data"
+                    className={`flex items-center justify-between gap-3 py-2 w-full px-3 rounded-lg transition-all duration-300 ${
+                      pathname.startsWith("/admin/dashboard/klaim-garansi/master-data")
+                        ? "link-active"
+                        : "hover:bg-primary hover:text-secondary"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <GoDatabase />
+                      <p>Master Data</p>
+                    </div>
+                  </Link>
+                  <Link
+                    href="/admin/dashboard/klaim-garansi/request-ban"
+                    className={`flex items-center justify-between gap-3 py-2 w-full px-3 rounded-lg transition-all duration-300 ${
+                      pathname.startsWith("/admin/dashboard/klaim-garansi/request-ban")
+                        ? "link-active"
+                        : "hover:bg-primary hover:text-secondary"
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <GoDatabase />
+                      <p>Request Ban</p>
                     </div>
                   </Link>
                 </div>

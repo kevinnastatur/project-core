@@ -34,6 +34,7 @@ export default function WarrantyRegistrationStep2() {
       try {
         setLoading(true);
         const response = await getStore();
+
         setData(response.data ?? []);
       } catch (err) {
         console.error("Failed to fetch store:", err);
@@ -46,15 +47,14 @@ export default function WarrantyRegistrationStep2() {
     fetchStore();
   }, []);
 
-  const filteredStore = data.filter((item) =>
-    item.store_id.toLowerCase().includes(search.toLowerCase())
+  const filteredStore = data.filter(
+    (item) =>
+      item.store_id.toLowerCase().includes(search.toLowerCase()) ||
+      item.store_name.toLowerCase().includes(search.toLowerCase())
   );
 
   const isFormValid =
-    store_id !== "" &&
-    purchaseDate.trim() !== "" &&
-    invoiceNumber.trim() !== "" &&
-    invoice !== null;
+    store_id !== "" && purchaseDate.trim() !== "" && invoice !== null;
 
   return (
     <div className="flex flex-col gap-5 font-bold text-sm xl:text-base">
@@ -88,7 +88,7 @@ export default function WarrantyRegistrationStep2() {
                   <div className="p-3 border-b border-input-border">
                     <input
                       type="text"
-                      placeholder="Cari ID Toko..."
+                      placeholder="Cari Nama Toko..."
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
                       className="w-full  border border-input-border rounded-lg px-3 py-2 outline-none text-sm"
@@ -111,8 +111,10 @@ export default function WarrantyRegistrationStep2() {
                           }}
                           className="w-full text-left px-4 py-3 hover:bg-primary/20 transition"
                         >
-                          <p className="font-semibold">{item.store_id}</p>
-                          <p className="text-xs text-white/60">
+                          <p className="font-semibold text-xs">
+                            {item.store_id}
+                          </p>
+                          <p className="text-sm text-white/60">
                             {item.store_name} — {item.city}
                           </p>
                         </button>
@@ -155,8 +157,6 @@ export default function WarrantyRegistrationStep2() {
               value={invoiceNumber}
               placeholder="Masukan Nomor Invoice Pembelian"
               maxLength={32}
-              required
-              reddot
               onChange={(e) => setField("invoiceNumber", e.target.value)}
             />
             <FileInput

@@ -1,116 +1,65 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect,Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { FaCheckCircle, FaMapMarkerAlt } from "react-icons/fa";
 import { MdOutlineArrowLeft, MdOutlineArrowRight, MdOutlineArrowDropDown, MdClose, MdCalendarToday } from "react-icons/md";
 import { IoCheckmarkCircle } from "react-icons/io5";
+import { getStore } from "@/services/Warranty";
+import { getWarrantyClaimDetail, appointmentClaimWarranty } from "@/services/WarrantlyClaim";
+import { StoreItem } from "@/types/general";
+import { showSuccessToast, showErrorToast } from "@/helper/toastHelper";
 
 // ============ TYPES ============
 type StepNumber = 1 | 2;
 
-interface Province {
-  id: string;
-  name: string;
+interface ClaimDetailData {
+  id: number;
+  user_id: number;
+  tire_warranty_id: number;
+  store_id: number | null;
+  claim_submission_code: string;
+  status: number;
+  damage_description: string | null;
+  appointment_date: string | null;
+  odometer_cust_now: string | null;
+  note_principal_submission: string | null;
+  approved_at: string | null;
+  note_principal_stock: string | null;
+  stock_verified_at: string | null;
+  note_store_inspection: string | null;
+  new_tire_barcode: string | null;
+  new_tire_dot: string | null;
+  tire_warranty: {
+    id: number;
+    tire_type: string;
+    tire_size: string;
+    barcode: string;
+    tire_number: string;
+    is_active: boolean;
+    warranty_date: string;
+  };
+  store: {
+    id: number;
+    store_id: string;
+    store_name: string;
+    province: string;
+    city: string;
+    url: string | null;
+  } | null;
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    phone: string | null;
+  };
+  image_odometer_url: string | null;
+  image_damage_main_url: string | null;
+  image_damage_side_url: string | null;
+  image_dot_code_url: string | null;
+  image_damage_angle_url: string | null;
 }
-
-interface City {
-  id: string;
-  provinceId: string;
-  name: string;
-}
-
-interface Shop {
-  id: string;
-  cityId: string;
-  name: string;
-  address: string;
-  phone: string;
-}
-
-interface ClaimInfo {
-  claimId: string;
-  warrantyId: string;
-  claimDate: string;
-  currentOdometer: string;
-}
-
-interface UserInfo {
-  fullName: string;
-  phone: string;
-  vehicleType: string;
-  plateNumber: string;
-  initialOdometer: string;
-  purchaseStore: string;
-  purchaseDate: string;
-}
-
-// ============ MOCK DATA ============
-const MOCK_PROVINCES: Province[] = [
-  { id: "1", name: "DKI Jakarta" },
-  { id: "2", name: "Jawa Barat" },
-  { id: "3", name: "Jawa Tengah" },
-  { id: "4", name: "Jawa Timur" },
-];
-
-const MOCK_CITIES: City[] = [
-  { id: "1", provinceId: "1", name: "Jakarta Selatan" },
-  { id: "2", provinceId: "1", name: "Jakarta Pusat" },
-  { id: "3", provinceId: "1", name: "Jakarta Barat" },
-  { id: "4", provinceId: "2", name: "Bandung" },
-  { id: "5", provinceId: "2", name: "Bekasi" },
-  { id: "6", provinceId: "3", name: "Semarang" },
-  { id: "7", provinceId: "4", name: "Surabaya" },
-];
-
-const MOCK_SHOPS: Shop[] = [
-  {
-    id: "1",
-    cityId: "1",
-    name: "MPN Kharisma - Jakarta Selatan",
-    address: "Jl. Radio Dalam Raya No. 123, Gandaria, Jakarta Selatan",
-    phone: "+62 21 7654321",
-  },
-  {
-    id: "2",
-    cityId: "1",
-    name: "Dunlop Shop Kemang",
-    address: "Jl. Kemang Raya No. 45, Kemang, Jakarta Selatan",
-    phone: "+62 21 7891234",
-  },
-  {
-    id: "3",
-    cityId: "2",
-    name: "Dunlop Shop Menteng",
-    address: "Jl. Menteng Raya No. 88, Menteng, Jakarta Pusat",
-    phone: "+62 21 3456789",
-  },
-  {
-    id: "4",
-    cityId: "4",
-    name: "Dunlop Shop Bandung",
-    address: "Jl. Asia Afrika No. 100, Bandung",
-    phone: "+62 22 1234567",
-  },
-];
-
-const MOCK_CLAIM_INFO: ClaimInfo = {
-  claimId: "CW-123912821",
-  warrantyId: "DTW-1239128001",
-  claimDate: "3 April 2026",
-  currentOdometer: "68312",
-};
-
-const MOCK_USER_INFO: UserInfo = {
-  fullName: "Esther Howard",
-  phone: "+62 8121455663437",
-  vehicleType: "Innova Zenix Q",
-  plateNumber: "B 2025 DUN",
-  initialOdometer: "68312",
-  purchaseStore: "MPN Kharisma",
-  purchaseDate: "1 Januari 2026",
-};
 
 // ============ STEPPER COMPONENT ============
 function Stepper({ currentStep }: { currentStep: StepNumber }) {
@@ -191,7 +140,7 @@ function Dropdown({
 
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-primary text-sm font-medium">
+      <label className="text-white text-sm font-medium">
         {label} <span className="text-red-500">*</span>
       </label>
       <div className="relative">
@@ -238,7 +187,7 @@ function Dropdown({
 function DisabledInput({ label, value, unit }: { label: string; value: string; unit?: string }) {
   return (
     <div className="flex flex-col gap-2">
-      <label className="text-primary text-sm font-medium">
+      <label className="text-white text-sm font-medium">
         {label} <span className="text-red-500">*</span>
       </label>
       {unit ? (
@@ -256,12 +205,11 @@ function DisabledInput({ label, value, unit }: { label: string; value: string; u
 }
 
 // ============ MAP PLACEHOLDER COMPONENT ============
-function MapPlaceholder({ selectedShop }: { selectedShop: Shop | null }) {
+function MapPlaceholder({ selectedShop }: { selectedShop: StoreItem | null }) {
   return (
     <div className="flex flex-col gap-4 h-full">
       <h3 className="text-white font-bold text-lg">Lokasi Dunlop Shop</h3>
       <div className="bg-[#2a2a2a] border border-input-border rounded-lg flex-1 min-h-80 flex flex-col items-center justify-center relative overflow-hidden">
-        {/* Static map placeholder background */}
         <div className="absolute inset-0 bg-gradient-to-br from-[#3a3a3a] to-[#2a2a2a] opacity-50" />
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="grid grid-cols-8 gap-1 opacity-20">
@@ -271,15 +219,14 @@ function MapPlaceholder({ selectedShop }: { selectedShop: Shop | null }) {
           </div>
         </div>
 
-        {/* Pin marker */}
         <div className="relative z-10 flex flex-col items-center gap-2">
           <div className="bg-red-500 p-3 rounded-full shadow-lg">
             <FaMapMarkerAlt className="text-white text-2xl" />
           </div>
           {selectedShop ? (
             <div className="bg-white text-secondary px-4 py-2 rounded-lg shadow-lg text-center max-w-xs">
-              <p className="font-bold text-sm">{selectedShop.name}</p>
-              <p className="text-xs text-gray-600">{selectedShop.address}</p>
+              <p className="font-bold text-sm">{selectedShop.store_name}</p>
+              <p className="text-xs text-gray-600">{selectedShop.city}, {selectedShop.province}</p>
             </div>
           ) : (
             <p className="text-white/50 text-sm">Pilih lokasi Dunlop Shop</p>
@@ -323,27 +270,41 @@ function SuccessNotification({ onClose }: { onClose: () => void }) {
 
 // ============ STEP 1: APPOINTMENT KLAIM GARANSI ============
 function Step1Appointment({
+  stores,
+  provinces,
   selectedProvince,
   selectedCity,
-  selectedShop,
+  selectedShopId,
   appointmentDate,
   onProvinceChange,
   onCityChange,
   onShopChange,
   onDateChange,
 }: {
+  stores: StoreItem[];
+  provinces: string[];
   selectedProvince: string;
   selectedCity: string;
-  selectedShop: string;
+  selectedShopId: string;
   appointmentDate: string;
-  onProvinceChange: (id: string) => void;
-  onCityChange: (id: string) => void;
+  onProvinceChange: (province: string) => void;
+  onCityChange: (city: string) => void;
   onShopChange: (id: string) => void;
   onDateChange: (date: string) => void;
 }) {
-  const filteredCities = MOCK_CITIES.filter((c) => c.provinceId === selectedProvince);
-  const filteredShops = MOCK_SHOPS.filter((s) => s.cityId === selectedCity);
-  const currentShop = MOCK_SHOPS.find((s) => s.id === selectedShop) || null;
+  // Derive cities from selected province
+  const cities = [...new Set(
+    stores
+      .filter((s) => s.province === selectedProvince)
+      .map((s) => s.city)
+  )];
+
+  // Filter shops by selected city
+  const filteredShops = stores.filter(
+    (s) => s.province === selectedProvince && s.city === selectedCity
+  );
+
+  const currentShop = stores.find((s) => String(s.id) === selectedShopId) || null;
 
   return (
     <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
@@ -357,10 +318,10 @@ function Step1Appointment({
               <Dropdown
                 label="Provinsi"
                 placeholder="Pilih Provinsi"
-                options={MOCK_PROVINCES}
+                options={provinces.map((p) => ({ id: p, name: p }))}
                 value={selectedProvince}
-                onChange={(id) => {
-                  onProvinceChange(id);
+                onChange={(val) => {
+                  onProvinceChange(val);
                   onCityChange("");
                   onShopChange("");
                 }}
@@ -368,10 +329,10 @@ function Step1Appointment({
               <Dropdown
                 label="Kota/Kabupaten"
                 placeholder="Pilih Kota/Kabupaten"
-                options={filteredCities}
+                options={cities.map((c) => ({ id: c, name: c }))}
                 value={selectedCity}
-                onChange={(id) => {
-                  onCityChange(id);
+                onChange={(val) => {
+                  onCityChange(val);
                   onShopChange("");
                 }}
                 disabled={!selectedProvince}
@@ -381,8 +342,8 @@ function Step1Appointment({
               <Dropdown
                 label="Cari Lokasi Dunlop Shop"
                 placeholder="Pilih Lokasi Dunlop Shop"
-                options={filteredShops.map((s) => ({ id: s.id, name: s.name }))}
-                value={selectedShop}
+                options={filteredShops.map((s) => ({ id: String(s.id), name: s.store_name }))}
+                value={selectedShopId}
                 onChange={onShopChange}
                 disabled={!selectedCity}
               />
@@ -394,9 +355,13 @@ function Step1Appointment({
                 <div className="flex items-start gap-3">
                   <FaMapMarkerAlt className="text-primary text-lg mt-1" />
                   <div>
-                    <p className="text-white font-semibold">{currentShop.name}</p>
-                    <p className="text-white/70 text-sm">{currentShop.address}</p>
-                    <p className="text-primary text-sm mt-1">{currentShop.phone}</p>
+                    <p className="text-white font-semibold">{currentShop.store_name}</p>
+                    <p className="text-white/70 text-sm">{currentShop.city}, {currentShop.province}</p>
+                    {currentShop.url && (
+                      <a href={currentShop.url} target="_blank" rel="noopener noreferrer" className="text-primary text-sm mt-1 block">
+                        Lihat di Maps
+                      </a>
+                    )}
                   </div>
                 </div>
               </div>
@@ -435,10 +400,12 @@ function Step1Appointment({
 
 // ============ STEP 2: KONFIRMASI KLAIM ============
 function Step2Konfirmasi({
+  claimDetail,
   selectedShop,
   appointmentDate,
 }: {
-  selectedShop: Shop | null;
+  claimDetail: ClaimDetailData | null;
+  selectedShop: StoreItem | null;
   appointmentDate: string;
 }) {
   const formatDate = (dateStr: string) => {
@@ -455,10 +422,10 @@ function Step2Konfirmasi({
         <h3 className="text-white font-bold text-lg">Informasi Klaim Garansi</h3>
         <div className="bg-input border border-input-border rounded-lg p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
-            <DisabledInput label="ID Klaim Garansi" value={MOCK_CLAIM_INFO.claimId} />
-            <DisabledInput label="ID Warranty" value={MOCK_CLAIM_INFO.warrantyId} />
-            <DisabledInput label="Tanggal Klaim" value={MOCK_CLAIM_INFO.claimDate} />
-            <DisabledInput label="Odometer Saat Ini" value={MOCK_CLAIM_INFO.currentOdometer} unit="km" />
+            <DisabledInput label="ID Klaim Garansi" value={claimDetail?.claim_submission_code || "-"} />
+            <DisabledInput label="ID Warranty" value={claimDetail?.tire_warranty?.barcode || "-"} />
+            <DisabledInput label="Tanggal Klaim" value={claimDetail?.approved_at ? formatDate(claimDetail.approved_at) : "-"} />
+            <DisabledInput label="Odometer Saat Ini" value={claimDetail?.odometer_cust_now || "-"} unit="km" />
           </div>
         </div>
       </div>
@@ -468,16 +435,16 @@ function Step2Konfirmasi({
         <h3 className="text-white font-bold text-lg">Informasi Dunlop Shop</h3>
         <div className="bg-input border border-input-border rounded-lg p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            <DisabledInput label="Nama Dunlop Shop" value={selectedShop?.name || "-"} />
-            <DisabledInput label="Nomor Telepon" value={selectedShop?.phone || "-"} />
+            <DisabledInput label="Nama Dunlop Shop" value={selectedShop?.store_name || "-"} />
+            <DisabledInput label="Kota" value={selectedShop?.city || "-"} />
           </div>
           <div className="mt-5">
-            <DisabledInput label="Alamat Dunlop Shop" value={selectedShop?.address || "-"} />
+            <DisabledInput label="Provinsi" value={selectedShop?.province || "-"} />
           </div>
         </div>
       </div>
 
-      {/* Jadwal Kunjungan */}
+      {/* Jadwal Kunjungan — from Step 1 local state, NOT from API */}
       <div className="flex flex-col gap-4">
         <h3 className="text-white font-bold text-lg">Jadwal Kunjungan</h3>
         <div className="bg-input border border-input-border rounded-lg p-5">
@@ -490,15 +457,12 @@ function Step2Konfirmasi({
         <h3 className="text-white font-bold text-lg">Informasi Pengguna</h3>
         <div className="bg-input border border-input-border rounded-lg p-5">
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            <DisabledInput label="Nama Lengkap" value={MOCK_USER_INFO.fullName} />
-            <DisabledInput label="Nomor Telepon" value={MOCK_USER_INFO.phone} />
-            <DisabledInput label="Tipe Kendaraan" value={MOCK_USER_INFO.vehicleType} />
-            <DisabledInput label="Plat Nomor Kendaraan" value={MOCK_USER_INFO.plateNumber} />
-            <DisabledInput label="Odometer Awal Kendaraan" value={MOCK_USER_INFO.initialOdometer} unit="km" />
-            <DisabledInput label="Toko Pembelian" value={MOCK_USER_INFO.purchaseStore} />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mt-5">
-            <DisabledInput label="Tanggal Pembelian" value={MOCK_USER_INFO.purchaseDate} />
+            <DisabledInput label="Nama Lengkap" value={claimDetail?.user?.name || "-"} />
+            <DisabledInput label="Nomor Telepon" value={claimDetail?.user?.phone || "-"} />
+            <DisabledInput label="Tipe Ban" value={claimDetail?.tire_warranty?.tire_type || "-"} />
+            <DisabledInput label="Ukuran Ban" value={claimDetail?.tire_warranty?.tire_size || "-"} />
+            <DisabledInput label="Odometer Saat Ini" value={claimDetail?.odometer_cust_now || "-"} unit="km" />
+            <DisabledInput label="Toko Klaim" value={selectedShop?.store_name || "-"} />
           </div>
         </div>
       </div>
@@ -507,20 +471,95 @@ function Step2Konfirmasi({
 }
 
 // ============ MAIN PAGE COMPONENT ============
-export default function JadwalKlaimGaransiPage() {
+function JadwalKlaimGaransi() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const claimId = searchParams.get("claimId");
+
   const [currentStep, setCurrentStep] = useState<StepNumber>(1);
   const [selectedProvince, setSelectedProvince] = useState("");
   const [selectedCity, setSelectedCity] = useState("");
-  const [selectedShop, setSelectedShop] = useState("");
+  const [selectedShopId, setSelectedShopId] = useState("");
   const [appointmentDate, setAppointmentDate] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
-  const currentShopData = MOCK_SHOPS.find((s) => s.id === selectedShop) || null;
+  // API data
+  const [stores, setStores] = useState<StoreItem[]>([]);
+  const [claimDetail, setClaimDetail] = useState<ClaimDetailData | null>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleNext = () => {
+  // Derived: unique provinces from stores
+  const provinces = [...new Set(stores.map((s) => s.province).filter(Boolean))];
+
+  // Derived: currently selected shop object
+  const currentShopData = stores.find((s) => String(s.id) === selectedShopId) || null;
+
+  // Fetch stores on mount
+  useEffect(() => {
+    const fetchStores = async () => {
+      try {
+        const res = await getStore();
+        setStores(res.data ?? []);
+      } catch (err) {
+        console.error("Failed to fetch stores:", err);
+        setStores([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStores();
+  }, []);
+
+  // Fetch claim detail when moving to Step 2
+  useEffect(() => {
+    if (currentStep === 2 && claimId) {
+      const fetchDetail = async () => {
+        try {
+          const res = await getWarrantyClaimDetail(claimId);
+          if (res.success && res.data) {
+            setClaimDetail(res.data);
+          }
+        } catch (err) {
+          console.error("Failed to fetch claim detail:", err);
+          showErrorToast("Gagal memuat detail klaim", "Silakan coba lagi.");
+        }
+      };
+
+      fetchDetail();
+    }
+  }, [currentStep, claimId]);
+
+  // Redirect if no claimId
+  useEffect(() => {
+    if (!claimId) {
+      router.push("/dashboard/klaim-garansi");
+    }
+  }, [claimId, router]);
+
+  const handleNext = async () => {
     if (currentStep === 1) {
-      setCurrentStep(2);
+      if (!claimId || !selectedShopId || !appointmentDate) return;
+
+      setSubmitting(true);
+      try {
+        const res = await appointmentClaimWarranty(Number(claimId), {
+          store_id: selectedShopId,
+          appointment_date: appointmentDate,
+        });
+
+        if (res.success) {
+          setCurrentStep(2);
+        } else {
+          showErrorToast("Gagal mengajukan jadwal", res.message || "Silakan coba lagi.");
+        }
+      } catch (err) {
+        console.error("Appointment submission failed:", err);
+        showErrorToast("Gagal mengajukan jadwal", "Terjadi kesalahan. Silakan coba lagi.");
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -550,10 +589,12 @@ export default function JadwalKlaimGaransiPage() {
 
   const canProceed = () => {
     if (currentStep === 1) {
-      return selectedProvince && selectedCity && selectedShop && appointmentDate;
+      return selectedProvince && selectedCity && selectedShopId && appointmentDate && !submitting;
     }
     return true;
   };
+
+  if (!claimId) return null;
 
   return (
     <div
@@ -588,60 +629,78 @@ export default function JadwalKlaimGaransiPage() {
       {/* Stepper */}
       <Stepper currentStep={currentStep} />
 
-      {/* Step Content */}
-      <div className="flex-1">
-        {currentStep === 1 && (
-          <Step1Appointment
-            selectedProvince={selectedProvince}
-            selectedCity={selectedCity}
-            selectedShop={selectedShop}
-            appointmentDate={appointmentDate}
-            onProvinceChange={setSelectedProvince}
-            onCityChange={setSelectedCity}
-            onShopChange={setSelectedShop}
-            onDateChange={setAppointmentDate}
-          />
-        )}
-        {currentStep === 2 && (
-          <Step2Konfirmasi
-            selectedShop={currentShopData}
-            appointmentDate={appointmentDate}
-          />
-        )}
-      </div>
+      {/* Loading State */}
+      {loading ? (
+        <div className="flex-1 flex items-center justify-center py-20">
+          <p className="text-white/50">Memuat data...</p>
+        </div>
+      ) : (
+        <>
+          {/* Step Content */}
+          <div className="flex-1">
+            {currentStep === 1 && (
+              <Step1Appointment
+                stores={stores}
+                provinces={provinces}
+                selectedProvince={selectedProvince}
+                selectedCity={selectedCity}
+                selectedShopId={selectedShopId}
+                appointmentDate={appointmentDate}
+                onProvinceChange={setSelectedProvince}
+                onCityChange={setSelectedCity}
+                onShopChange={setSelectedShopId}
+                onDateChange={setAppointmentDate}
+              />
+            )}
+            {currentStep === 2 && (
+              <Step2Konfirmasi
+                claimDetail={claimDetail}
+                selectedShop={currentShopData}
+                appointmentDate={appointmentDate}
+              />
+            )}
+          </div>
 
-      {/* Navigation Buttons */}
-      <div className="flex gap-4 mt-8">
-        {currentStep > 1 && (
-          <button
-            data-testid="prev-step-btn"
-            type="button"
-            onClick={handlePrev}
-            className="bg-[#333333] px-8 py-3 text-primary rounded-lg text-sm font-bold flex items-center gap-1 hover:opacity-90 transition"
-          >
-            <MdOutlineArrowLeft />
-            <span>Kembali</span>
-          </button>
-        )}
-        <button
-          data-testid="next-step-btn"
-          type="button"
-          onClick={currentStep === 2 ? handleSubmit : handleNext}
-          disabled={!canProceed()}
-          className={`
-            flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1
-            transition
-            ${
-              canProceed()
-                ? "bg-primary text-secondary hover:opacity-90"
-                : "bg-primary/50 text-secondary/50 cursor-not-allowed"
-            }
-          `}
-        >
-          <span>{currentStep === 2 ? "Ajukan Penjadwalan" : "Lanjutkan"}</span>
-          <MdOutlineArrowRight />
-        </button>
-      </div>
+          {/* Navigation Buttons */}
+          <div className="flex gap-4 mt-8">
+            {currentStep > 1 && (
+              <button
+                data-testid="prev-step-btn"
+                type="button"
+                onClick={handlePrev}
+                className="bg-[#333333] px-8 py-3 text-primary rounded-lg text-sm font-bold flex items-center gap-1 hover:opacity-90 transition"
+              >
+                <MdOutlineArrowLeft />
+                <span>Kembali</span>
+              </button>
+            )}
+            <button
+              data-testid="next-step-btn"
+              type="button"
+              onClick={currentStep === 2 ? handleSubmit : handleNext}
+              disabled={!canProceed()}
+              className={`
+                flex-1 py-3 rounded-lg text-sm font-bold flex items-center justify-center gap-1
+                transition
+                ${
+                  canProceed()
+                    ? "bg-primary text-secondary hover:opacity-90"
+                    : "bg-primary/50 text-secondary/50 cursor-not-allowed"
+                }
+              `}
+            >
+              {submitting ? (
+                <span>Mengirim...</span>
+              ) : (
+                <>
+                  <span>{currentStep === 2 ? "Ajukan Penjadwalan" : "Lanjutkan"}</span>
+                  <MdOutlineArrowRight />
+                </>
+              )}
+            </button>
+          </div>
+        </>
+      )}
 
       {/* Help Section */}
       <div className="mt-8 bg-primary rounded-lg p-5 flex items-center justify-between">
@@ -660,4 +719,12 @@ export default function JadwalKlaimGaransiPage() {
       </div>
     </div>
   );
+}
+
+export default function JadwalKlaimGaransiPage() {
+return (
+  <Suspense fallback={<div>Loading...</div>}>
+    <JadwalKlaimGaransi />
+  </Suspense>
+);
 }

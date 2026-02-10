@@ -13,11 +13,8 @@ import userHooks from "@/hooks/user/userHooks";
 import { destroyCookie } from "nookies";
 import { showErrorToast, showSuccessToast } from "@/helper/toastHelper";
 import { CgMenuGridO } from "react-icons/cg";
-
-// BasePath for assets (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
 import { BsPatchCheck } from "react-icons/bs";
-import { LuUser } from "react-icons/lu";
+import { LuUser,LuShield } from "react-icons/lu";
 import { useSearchParams } from "next/navigation";
 import { getNotifIndexCustomer } from "@/services/General";
 import { updateNotif } from "@/services/admin/General";
@@ -58,6 +55,14 @@ export default function NavbarUser() {
       title: "Garansi Ban",
       link: "/dashboard/tire-warranty/status",
       hover: "/dashboard/tire-warranty",
+      desc: "Garansi Ban",
+    },
+    {
+      id: 5,
+      src: <LuShield />,
+      title: "Klaim Garansi",
+      link: "/dashboard/klaim-garansi",
+      hover: "/dashboard/klaim-garansi",
       desc: "Garansi Ban",
     },
     {
@@ -136,7 +141,7 @@ export default function NavbarUser() {
     showSuccessToast("Success", "Anda berhasil logout");
 
     setTimeout(() => {
-      window.location.replace("/auth/login");
+      window.location.reload();
     }, 1500);
   };
 
@@ -145,13 +150,11 @@ export default function NavbarUser() {
       try {
         const res = await getNotifIndexCustomer();
 
-        // Handle development mode where res might not have data property
-        const notifArray = res?.data ? Object.values(res.data) : [];
+        const notifArray = Object.values(res.data);
         setNotifData(notifArray);
         setVisibleCount(PAGE_SIZE);
       } catch (error) {
         console.error(error);
-        setNotifData([]);
       }
     };
 
@@ -200,7 +203,7 @@ export default function NavbarUser() {
       <div className="w-full flex justify-between items-center">
         <div className="w-fit h-full rounded-2xl">
           <Image
-            src={`${BASE_PATH}/assets/logo-default.png`}
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/logo-default.png`}
             alt="dunlop-logo"
             width={9999}
             height={9999}
@@ -266,9 +269,10 @@ export default function NavbarUser() {
               pathname === item.hover || pathname.startsWith(item.hover + "/");
 
             return (
-              <div key={item.id} className="flex flex-col relative ">
+              <div className="flex flex-col relative ">
                 <Link
                   href={item.link}
+                  key={item.id}
                   className={`font-semibold flex gap-2 items-center hover:bg-[#333333] px-5 py-3 rounded-lg  ${
                     isActive ? "bg-[#333333]" : ""
                   }`}

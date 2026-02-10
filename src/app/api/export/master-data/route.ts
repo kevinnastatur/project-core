@@ -11,12 +11,15 @@ export async function GET() {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  const res = await fetch(`${BASE_URL}/warranty/principal/master-data-export`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-    cache: "no-store",
-  });
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/warranty/principal/master-data-export`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "no-store",
+    }
+  );
 
   if (!res.ok || !res.body) {
     return new Response("Failed to export", { status: 500 });

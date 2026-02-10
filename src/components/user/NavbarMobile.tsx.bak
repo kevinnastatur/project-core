@@ -1,0 +1,67 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { BsPatchCheck } from "react-icons/bs";
+import { CgMenuGridO } from "react-icons/cg";
+import { LuUser } from "react-icons/lu";
+import { TbRosetteDiscount } from "react-icons/tb";
+
+type IconProps = {
+  active: boolean;
+};
+
+export default function NavbarMobile() {
+  const pathname = usePathname();
+
+  const Tab = [
+    {
+      id: 1,
+      src: <CgMenuGridO />,
+      title: "Overview",
+      link: "/dashboard/overview",
+      desc: "Dunlop Tyre Warranty & Claim",
+    },
+    {
+      id: 2,
+      src: <BsPatchCheck />,
+      title: "Garansi Ban",
+      link: "/dashboard/tire-warranty/status",
+      desc: "Garansi Ban",
+    },
+    {
+      id: 3,
+      src: <LuUser />,
+      title: "Profile",
+      link: "/dashboard/account-setting/personal-data",
+      desc: "BsPatchCheck",
+    },
+  ];
+  return (
+    <nav className="w-full lg:hidden bg-primary gap-3 py-2">
+      <div className="flex  justify-between items-end text-sm w-full">
+        {Tab.map((item) => {
+          const isActive = pathname === item.link;
+          return (
+            <div className="flex flex-col gap-0 relative w-full mx-auto">
+              {" "}
+              <Link
+                key={item.id}
+                href={item.link}
+                className={`font-semibold min-w-15  flex flex-col gap-2 items-center py-3 rounded-lg transition
+              ${isActive ? "text-[#333333]" : "text-[#6A6A6A]"}
+            `}
+              >
+                {item.src}
+                <p>{item.title}</p>
+                {isActive && (
+                  <div className="w-1 h-1 bg-black rounded-full absolute bottom-0"></div>
+                )}
+              </Link>
+            </div>
+          );
+        })}
+      </div>
+    </nav>
+  );
+}

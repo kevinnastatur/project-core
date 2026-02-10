@@ -55,14 +55,8 @@ export const getNotifIndexCustomer = async () => {
   const cookieStore = await cookies();
   const token = cookieStore.get("access_token")?.value;
 
-  // Skip token check in development mode
-  if (!token && process.env.NODE_ENV === 'production') {
+  if (!token) {
     throw new Error("Unauthorized: token not found");
-  }
-
-  // Return empty notifications in development if no token
-  if (!token && process.env.NODE_ENV === 'development') {
-    return { notifications: [] };
   }
 
   const res = await fetch(`${BASE_URL}/customer/notifications`, {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiArrowDropDownFill } from "react-icons/ri";
 
 interface Option {
@@ -9,12 +9,13 @@ interface Option {
 }
 
 interface Props {
-  label: string;
-  name: string;
-  value: string;
-  options: Option[];
+  label?: string;
+  name?: string;
+  value?: string;
   placeholder?: string;
+  options: Option[];
   required?: boolean;
+  disabled?: boolean;
   onChange: (value: string) => void;
 }
 
@@ -24,14 +25,27 @@ export default function SearchableDropdown({
   options,
   placeholder = "Pilih option",
   required = false,
+  disabled = false,
   onChange,
 }: Props) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    if (disabled) {
+      setOpen(false);
+      setSearch("");
+    }
+  }, [disabled]);
+
   const filtered = options.filter((o) =>
     o.label.toLowerCase().includes(search.toLowerCase())
   );
+
+  const handleToggle = () => {
+    if (disabled) return;
+    setOpen((prev) => !prev);
+  };
 
   return (
     <div className="flex flex-col gap-2 w-full text-white font-bold">
@@ -43,15 +57,20 @@ export default function SearchableDropdown({
         {/* Trigger */}
         <button
           type="button"
-          onClick={() => setOpen(!open)}
-          className="w-full bg-input py-3 px-5 rounded-lg border border-input-border flex justify-between items-center"
+          disabled={disabled}
+          onClick={handleToggle}
+          className={`w-full bg-input py-3 px-5 rounded-lg border border-input-border flex justify-between items-center
+            ${disabled ? "opacity-50 cursor-not-allowed" : ""}
+          `}
         >
-          <span>{value || placeholder}</span>
+          <span className={!value ? "text-input-placeholder" : ""}>
+            {value || placeholder}
+          </span>
           <RiArrowDropDownFill className="text-2xl" />
         </button>
 
         {/* Dropdown */}
-        {open && (
+        {open && !disabled && (
           <div className="absolute z-50 w-full bg-input border border-input-border rounded-lg mt-1 max-h-80 overflow-hidden">
             <div className="p-3">
               <input

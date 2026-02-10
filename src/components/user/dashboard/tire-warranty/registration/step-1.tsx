@@ -1,7 +1,20 @@
 "use client";
 
-// BasePath for assets (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
+import Image from "next/image";
+import { FaCheckCircle } from "react-icons/fa";
+import { IoCloseCircle } from "react-icons/io5";
+import DropdownInput from "@/components/ui/DropdownInput";
+import GeneralInput from "@/components/ui/GeneralInput";
+import OdometerInput from "@/components/ui/OdometerInput";
+import FileInput from "@/components/ui/FileImageInput";
+import ActionLink from "@/components/ui/button/ActionLink";
+import { useWarrantyStore } from "@/stores/useWarrantyRegistrationStore";
+import { useUserStore } from "@/stores/useUserStore";
+import { useEffect, useState } from "react";
+import { getBrand, getType } from "@/services/Warranty";
+import SearchableDropdown from "@/components/ui/SearchableDropdown";
+import ButtonAdd from "@/components/ui/button/ButtonAdd";
+
 export default function WarrantyRegistrationStep1() {
   const {
     name,
@@ -118,7 +131,7 @@ export default function WarrantyRegistrationStep1() {
               {/* success */}
               <div className="flex items-center relative rounded-lg w-full lg:w-[50%] ">
                 <Image
-                  src={`${BASE_PATH}/assets/warranty/odometer1.png`}
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/warranty/odometer1.png`}
                   width={9999}
                   height={9999}
                   alt="odometer1"
@@ -140,7 +153,7 @@ export default function WarrantyRegistrationStep1() {
               {/* failed */}
               <div className="flex items-center relative rounded-lg w-full lg:w-[50%] ">
                 <Image
-                  src={`${BASE_PATH}/assets/warranty/odometer2.png`}
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/warranty/odometer2.png`}
                   width={9999}
                   height={9999}
                   alt="odometer1"
@@ -171,7 +184,33 @@ export default function WarrantyRegistrationStep1() {
           <p>Data Kendaraan</p>
           <div className="flex flex-col w-full h-full gap-5 p-5 bg-secondary rounded-lg border border-input-border">
             <div className="flex flex-col md:flex-row items-center gap-5 justify-between">
-              <DropdownInput
+              <SearchableDropdown
+                label="Brand Kendaraan"
+                name="brand"
+                value={
+                  brandOptions.find((item) => item.id === brandId)?.name ?? ""
+                }
+                placeholder="Pilih Brand Kendaraan Anda"
+                options={brandOptions.map((item) => ({
+                  label: item.name,
+                  value: item.name,
+                }))}
+                onChange={(value) => {
+                  const selectedBrand = brandOptions.find(
+                    (item) => item.name === value
+                  );
+
+                  if (!selectedBrand) return;
+
+                  setBrandId(selectedBrand.id);
+                  setField("brand", selectedBrand.name);
+                  setField("type", "");
+                  setField("anotherType", "");
+                }}
+                required
+              />
+
+              {/* <DropdownInput
                 label="Brand Kendaraan"
                 name="brand"
                 value={brandId ?? ""}
@@ -195,35 +234,55 @@ export default function WarrantyRegistrationStep1() {
                   setField("anotherType", "");
                 }}
                 required
-              />
+              /> */}
 
-              <DropdownInput
+              <SearchableDropdown
                 label="Tipe Kendaraan"
                 name="type"
-                value={type}
+                value={type === "Type Lainnya" ? "Type Lainnya" : type ?? ""}
                 placeholder="Pilih Tipe Kendaraan Anda"
                 options={[
                   ...typeOptions.map((item) => ({
                     label: item.name,
-                    value: item.slug,
+                    value: String(item.name ?? ""),
                   })),
-                  { label: "Lainnya", value: "lainnya" },
+                  { label: "Type Lainnya", value: "Type Lainnya" },
                 ]}
-                onChange={(e) => setField("type", e.target.value)}
+                onChange={(value) => {
+                  setField("type", value);
+
+                  if (value !== "Type Lainnya") {
+                    setField("anotherType", "");
+                  }
+                }}
                 required
               />
             </div>
-            {type === "lainnya" && (
-              <GeneralInput
-                label="Tipe Kendaraan (Lainnya)"
-                name="anotherType"
-                type="text"
-                placeholder="Masukan Tipe Kendaraan Anda"
-                maxLength={64}
-                value={anotherType}
-                reddot
-                onChange={(e) => setField("anotherType", e.target.value)}
-              />
+            {type === "Type Lainnya" && (
+              <div className="flex flex-col gap-3">
+                <GeneralInput
+                  label="Tipe Kendaraan (Lainnya)"
+                  name="anotherType"
+                  type="text"
+                  placeholder="Masukan Tipe Kendaraan Anda"
+                  maxLength={64}
+                  value={anotherType}
+                  reddot
+                  onChange={(e) => {
+                    setField("anotherType", e.target.value);
+                  }}
+                />
+
+                <ButtonAdd
+                  label="Tambah Kendaraan"
+                  onClick={() => {
+                    if (!anotherType?.trim()) return;
+
+                    setField("type", anotherType.trim());
+                    setField("anotherType", "");
+                  }}
+                />
+              </div>
             )}
 
             <GeneralInput

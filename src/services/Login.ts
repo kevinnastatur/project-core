@@ -6,12 +6,12 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 export const postUserLogin = async (data: {
   email: string;
   password: string;
-  cf_turnstile_token: string;
+  // cf_turnstile_token: string;
 }) => {
   const formData = new FormData();
   formData.append("email", data.email);
   formData.append("password", data.password);
-  formData.append("cf_turnstile_token", data.cf_turnstile_token);
+  // formData.append("cf_turnstile_token", data.cf_turnstile_token);
 
   const res = await fetch(`${BASE_URL}/auth/login`, {
     method: "POST",

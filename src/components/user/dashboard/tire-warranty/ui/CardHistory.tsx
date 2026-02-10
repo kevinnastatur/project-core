@@ -61,7 +61,7 @@ export default function CardHistoryWarranty({
     <div
       className="bg-input border-2 border-input-border  hover:border-primary transition-all duration-300 rounded-lg flex flex-col gap-2 p-5  text-primary justify-center  text-lg xl:text-xl min-h-75 md:h-75 xl:h-80 2xl:h-75 "
       style={{
-        backgroundImage: "url('/assets/overview/images.png')",
+        backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_PATH}/assets/overview/images.png)`,
         backgroundSize: "cover",
       }}
     >
@@ -153,19 +153,32 @@ export default function CardHistoryWarranty({
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1">
             <p className="text-sm xl:text-base font-medium">Masa Garansi</p>
-            <p className="text-base xl:text-xl text-white">
-              Aktif s/d {""}
-              <DateFormat date={activate_date} />
-            </p>
+            <div className="text-base xl:text-xl text-white">
+              {status === 3 ? (
+                <p>
+                  {" "}
+                  Aktif s/d {""}
+                  <DateFormat date={activate_date} />
+                </p>
+              ) : (
+                <p>-</p>
+              )}
+            </div>
           </div>
           <div className="flex flex-col gap-1">
             <p className="text-sm xl:text-base font-medium">
               Tanggal Pembelian
             </p>
-            <p className="text-base xl:text-xl text-white">
-              {" "}
-              <DateFormat date={buy_date} />
-            </p>
+            <div className="text-base xl:text-xl text-white">
+              {status === 3 ? (
+                <p>
+                  {" "}
+                  <DateFormat date={buy_date} />
+                </p>
+              ) : (
+                <p>-</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

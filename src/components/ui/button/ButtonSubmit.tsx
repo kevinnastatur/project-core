@@ -4,12 +4,14 @@ interface ButtonProps {
   label: string;
   disabled?: boolean;
   onClick?: () => void;
+  className?: string;
 }
 
 export default function ButtonSubmit({
   label,
   disabled = false,
   onClick,
+  className,
 }: ButtonProps) {
   return (
     <button
@@ -28,6 +30,7 @@ export default function ButtonSubmit({
         ease-out
         w-full
         flex items-center justify-center
+        ${className}
         ${
           disabled
             ? "opacity-50 cursor-not-allowed"

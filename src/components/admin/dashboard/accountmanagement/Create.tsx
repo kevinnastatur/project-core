@@ -90,7 +90,9 @@ export default function CreateAccount() {
     try {
       const formData = new FormData();
       formData.append("role", role);
-      formData.append("store_id", storeID);
+      {
+        role === "shop" && formData.append("store_id", storeID);
+      }
       formData.append("name", name);
       formData.append("email", email);
       formData.append("phone", phone);
@@ -136,6 +138,9 @@ export default function CreateAccount() {
         "Periksa Jaringan Internet Anda",
         "Perubahan Status Registrasi Gagal! Sepertinya jaringan Anda bermasalah, Periksa kembali jaringan anda lalu submit kembali."
       );
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } finally {
       setLoading(false);
     }

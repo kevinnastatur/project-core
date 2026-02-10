@@ -3,6 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { WarrantyItem, WarrantyStatus } from "@/types/warranty";
 import { getWarrantyIndex } from "@/services/Warranty";
+
+const STATUS_OPTIONS: { label: string; value: WarrantyStatus | null }[] = [
+  { label: "Semua", value: null },
+  { label: "Proses Verifikasi", value: 0 },
+  { label: "Perbaikan", value: 1 },
+  { label: "Ditolak", value: 2 },
+  { label: "Garansi Aktif", value: 3 },
+];
+
 export default function useHistoryTireHooks() {
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<WarrantyStatus | null>(null);
@@ -19,19 +28,20 @@ export default function useHistoryTireHooks() {
       try {
         setLoading(true);
 
-        let response;
-        if (status === null) {
-          response = await getWarrantyIndex(page, perpage);
-        } else {
-          response = await getWarrantyIndex(page, perpage, status);
-        }
-        const filteredActiveTires = response.data.data.filter(
-          (item: any) => item.status === 3
-        );
-        setActiveTires(filteredActiveTires.length.toString());
-        setData(response.data.data ?? []);
-        setPagenation(response.data ?? []);
-        setTotalPage(response.meta?.total_page ?? 1);
+        const response =
+          status === null
+            ? await getWarrantyIndex(page, perpage)
+            : await getWarrantyIndex(page, perpage, status);
+        const items = response.data?.data ?? [];
+
+        setData(items);
+
+        setTotalPage(response.data?.last_page ?? 1);
+
+        const active = items.filter((item: any) => item.status === 3);
+        setActiveTires(active.length.toString());
+
+        setPagenation(response.data);
       } catch (err) {
         console.error("Failed to fetch warranty:", err);
         setData([]);
@@ -41,7 +51,7 @@ export default function useHistoryTireHooks() {
     };
 
     getWarranty();
-  }, [status, page]);
+  }, [status, page, perpage]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -105,5 +115,6 @@ export default function useHistoryTireHooks() {
     setPerPage,
     getPagination,
     activeTires,
+    STATUS_OPTIONS,
   };
 }

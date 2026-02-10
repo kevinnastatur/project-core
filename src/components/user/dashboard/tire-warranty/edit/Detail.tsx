@@ -14,6 +14,9 @@ import BarcodeScanInput from "@/components/ui/BarcodeScanInput";
 import ButtonAdd from "@/components/ui/button/ButtonAdd";
 import useWarrantyDetailHook from "@/hooks/user/warrantyEdit";
 import { CiSearch } from "react-icons/ci";
+import SearchableDropdown from "@/components/ui/SearchableDropdown";
+import FileInput from "@/components/ui/FileInput";
+import { useState } from "react";
 
 export default function DetailEditTireWarrantyEdit() {
   const {
@@ -47,7 +50,8 @@ export default function DetailEditTireWarrantyEdit() {
     typeOptions,
     setTypeOptions,
   } = useWarrantyDetailHook();
-  
+  const [anotherType, setAnotherType] = useState("");
+
   return (
     <>
       <LoadingOverlay show={loading} />
@@ -85,9 +89,38 @@ export default function DetailEditTireWarrantyEdit() {
           <div className="grid grid-cols-1 md:grid-cols-2  w-full gap-5  items-start p-5 bg-secondary rounded-lg border border-input-border h-full">
             <div className="flex flex-col w-full gap-5 ">
               {isEditable("brand") || isEditable("model") ? (
-                <div className="flex flex-col md:flex-row items-center gap-5 justify-between">
+                <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-5 justify-between">
                   {/* BRAND */}
-                  <DropdownInput
+                  <SearchableDropdown
+                    label="Brand Kendaraan"
+                    name="brand"
+                    value={dataEdit.brand ?? ""}
+                    placeholder="Pilih Brand Kendaraan Anda"
+                    options={(brandOptions ?? []).map((item) => ({
+                      label: item.name,
+                      value: item.name,
+                    }))}
+                    onChange={(value: string) => {
+                      const selectedBrand = brandOptions.find(
+                        (item) => item.name === value
+                      );
+
+                      if (!selectedBrand) return;
+
+                      setBrandId(selectedBrand.id);
+
+                      setDataEdit((prev) => ({
+                        ...prev,
+                        brand: selectedBrand.name,
+                        model: "",
+                      }));
+
+                      setTypeOptions([]);
+                    }}
+                    required
+                  />
+
+                  {/* <DropdownInput
                     label="Brand Kendaraan"
                     name="brand"
                     value={dataEdit.brand ?? ""}
@@ -116,10 +149,10 @@ export default function DetailEditTireWarrantyEdit() {
                       setTypeOptions([]);
                     }}
                     required
-                  />
+                  /> */}
 
                   {/* TYPE */}
-                  <DropdownInput
+                  {/* <DropdownInput
                     label="Tipe Kendaraan"
                     name="type"
                     value={dataEdit.model ?? ""}
@@ -140,7 +173,62 @@ export default function DetailEditTireWarrantyEdit() {
                     }
                     required
                     disabled={!brandId}
+                  /> */}
+                  <SearchableDropdown
+                    label="Tipe Kendaraan"
+                    name="type"
+                    value={dataEdit.model ?? ""}
+                    placeholder={
+                      brandId
+                        ? "Pilih Tipe Kendaraan Anda"
+                        : "Pilih Brand Terlebih Dahulu"
+                    }
+                    options={[
+                      ...(typeOptions ?? []).map((item) => ({
+                        label: item.name,
+                        value: item.name,
+                      })),
+                      { label: "Type Lainnya", value: "Type Lainnya" },
+                    ]}
+                    onChange={(value: string) =>
+                      setDataEdit((prev) => ({
+                        ...prev,
+                        model: value,
+                      }))
+                    }
+                    required
+                    disabled={!brandId}
                   />
+
+                  {dataEdit.model === "Type Lainnya" && (
+                    <div className="flex flex-col gap-3">
+                      <GeneralInput
+                        label="Tipe Kendaraan (Lainnya)"
+                        name="anotherType"
+                        type="text"
+                        placeholder="Masukan Tipe Kendaraan Anda"
+                        maxLength={64}
+                        value={anotherType}
+                        reddot
+                        onChange={(e) => setAnotherType(e.target.value)}
+                      />
+
+                      <ButtonAdd
+                        label="Tambah Kendaraan"
+                        onClick={() => {
+                          if (!anotherType.trim()) return;
+
+                          setDataEdit((prev) => ({
+                            ...prev,
+                            model: anotherType.trim(),
+                          }));
+
+                          // optional: reset field
+                          setAnotherType("");
+                        }}
+                      />
+                    </div>
+                  )}
                 </div>
               ) : (
                 /* READ ONLY */
@@ -513,10 +601,10 @@ export default function DetailEditTireWarrantyEdit() {
                 )}
               </div>
               {isEditable("invoice") ? (
-                <FilePdfInput
+                <FileInput
                   label="Unggah Invoice"
                   description="Unggah Invoice Pembelian"
-                  name="invoice"
+                  name="buktiPembelian"
                   required
                   multiple={false}
                   onChange={(value) => {
@@ -566,19 +654,20 @@ export default function DetailEditTireWarrantyEdit() {
                 <div className="flex flex-col gap-5 mt-5 border border-input-border rounded-lg p-5 ">
                   {/* Tipe Ban */}
                   {isEditable(`tire_warranties[${index}].tire_type`) ? (
-                    <DropdownInput
+                    <SearchableDropdown
                       name={`tirestype-${index}`}
                       label="Tipe Ban"
                       value={tire.tire_type}
                       placeholder="Pilih Tipe Ban"
                       options={[
-                        { label: "Premium", value: "premium" },
-                        { label: "Sports", value: "sports" },
+                        {
+                          label: "BLUE RESPONSE TG",
+                          value: "BLUE RESPONSE TG",
+                        },
                       ]}
-                      onChange={(e) =>
-                        handleTireChange(index, "tire_type", e.target.value)
+                      onChange={(value: string) =>
+                        handleTireChange(index, "tire_type", value)
                       }
-                      required
                     />
                   ) : (
                     <div className=" flex flex-col gap-2">
@@ -597,17 +686,56 @@ export default function DetailEditTireWarrantyEdit() {
                   )}
                   {/* Ukuran Ban */}
                   {isEditable(`tire_warranties[${index}].tire_size`) ? (
-                    <GeneralInput
+                    <SearchableDropdown
                       name={`tiresize-${index}`}
                       label="Ukuran Ban"
                       value={tire.tire_size}
                       placeholder="Masukkan Ukuran Ban"
-                      maxLength={16}
-                      required
-                      reddot
-                      onChange={(e) =>
-                        handleTireChange(index, "tire_size", e.target.value)
+                      options={[
+                        { label: "185/55R15", value: "185/55R15" },
+                        { label: "185/55R16", value: "185/55R16" },
+                        { label: "185/65R15", value: "185/65R15" },
+
+                        { label: "195/45R16", value: "195/45R16" },
+                        { label: "195/50R16", value: "195/50R16" },
+                        { label: "195/55R16", value: "195/55R16" },
+                        { label: "195/60R16", value: "195/60R16" },
+                        { label: "195/65R15", value: "195/65R15" },
+
+                        { label: "205/45R17", value: "205/45R17" },
+                        { label: "205/50R17", value: "205/50R17" },
+                        { label: "205/55R16", value: "205/55R16" },
+                        { label: "205/55R17", value: "205/55R17" },
+                        { label: "205/60R16", value: "205/60R16" },
+                        { label: "205/65R15", value: "205/65R15" },
+                        { label: "205/65R16", value: "205/65R16" },
+                        { label: "205/70R15", value: "205/70R15" },
+
+                        { label: "215/45R17", value: "215/45R17" },
+                        { label: "215/50R17", value: "215/50R17" },
+                        { label: "215/55R17", value: "215/55R17" },
+                        { label: "215/60R17", value: "215/60R17" },
+                        { label: "215/65R16", value: "215/65R16" },
+                        { label: "215/70R15", value: "215/70R15" },
+
+                        { label: "225/40R18", value: "225/40R18" },
+                        { label: "225/45R18", value: "225/45R18" },
+                        { label: "225/50R17", value: "225/50R17" },
+                        { label: "225/50R18", value: "225/50R18" },
+                        { label: "225/55R17", value: "225/55R17" },
+                        { label: "225/55R18", value: "225/55R18" },
+                        { label: "225/60R18", value: "225/60R18" },
+
+                        { label: "235/45R18", value: "235/45R18" },
+                        { label: "235/50R18", value: "235/50R18" },
+                        { label: "235/55R18", value: "235/55R18" },
+                        { label: "235/55R19", value: "235/55R19" },
+                        { label: "235/60R18", value: "235/60R18" },
+                      ]}
+                      onChange={(value: string) =>
+                        handleTireChange(index, "tire_size", value)
                       }
+                      required
                     />
                   ) : (
                     <div className=" flex flex-col gap-2">
@@ -674,7 +802,7 @@ export default function DetailEditTireWarrantyEdit() {
                         <input
                           value={tire?.tire_number ?? ""}
                           readOnly
-                          className="flex-1 bg-transparent py-3 px-5 font-medium outline-none capitalize"
+                          className="flex-1 bg-transparent py-3 px-5 font-medium outline-none uppercase"
                         />
                       </div>
                     </div>

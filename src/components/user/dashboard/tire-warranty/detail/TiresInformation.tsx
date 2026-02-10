@@ -1,8 +1,14 @@
-import useUserWarrantyHook from "@/hooks/user/warrantyDetail";
+import { WarrantyItemDetail, Tire } from "@/types/warranty";
 
-export default function UserInformationTireWarranty() {
-  const { data } = useUserWarrantyHook();
+interface UserInformationTireWarrantyProps {
+  data: {
+    tire_warranties?: Tire[];
+  };
+}
 
+export default function UserInformationTireWarranty({
+  data,
+}: UserInformationTireWarrantyProps) {
   return (
     <div className=" flex flex-col gap-3 font-bold text-sm xl:text-base h-full">
       <p>Informasi Ban</p>
@@ -71,7 +77,7 @@ export default function UserInformationTireWarranty() {
                     <input
                       value={tire?.tire_number ?? ""}
                       readOnly
-                      className="flex-1 bg-transparent py-3 px-5 font-medium outline-none capitalize"
+                      className="flex-1 bg-transparent py-3 px-5 font-medium outline-none uppercase"
                     />
                   </div>
                 </div>

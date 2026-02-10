@@ -77,59 +77,63 @@ export default function PromotionSection() {
           </div>
         ))}
       </div>
-      <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
-        {/* PREV */}
-        <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-          className={` h-8 w-8 xl:h-12 xl:w-12 text-xs xl:text-sm text-primary flex justify-center items-center rounded-full border-2 border-primary font-semibold transition
+      {data.length > 0 ? (
+        <div className="flex justify-center items-center gap-2 mt-6 flex-wrap">
+          {/* PREV */}
+          <button
+            onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
+            disabled={page === 1}
+            className={` h-8 w-8 xl:h-12 xl:w-12 text-xs xl:text-sm text-primary flex justify-center items-center rounded-full border-2 border-primary font-semibold transition
         ${
           page === 1
             ? " text-primary/30 border-primary/30 cursor-not-allowed"
             : "border border-primary hover:border-primary"
         }
       `}
-        >
-          <FaArrowLeft />
-        </button>
+          >
+            <FaArrowLeft />
+          </button>
 
-        {/* PAGE NUMBERS */}
-        {Array.from({ length: totalPage }).map((_, index) => {
-          const pageNumber = index + 1;
-          const isActive = page === pageNumber;
+          {/* PAGE NUMBERS */}
+          {Array.from({ length: totalPage }).map((_, index) => {
+            const pageNumber = index + 1;
+            const isActive = page === pageNumber;
 
-          return (
-            <button
-              key={pageNumber}
-              onClick={() => setPage(pageNumber)}
-              className={` h-8 w-8 xl:h-12 xl:w-12 text-xs xl:text-sm text-primary flex justify-center items-center rounded-full border-2 border-primary font-semibold transition
+            return (
+              <button
+                key={pageNumber}
+                onClick={() => setPage(pageNumber)}
+                className={` h-8 w-8 xl:h-12 xl:w-12 text-xs xl:text-sm text-primary flex justify-center items-center rounded-full border-2 border-primary font-semibold transition
             ${
               isActive
                 ? "bg-primary text-secondary"
                 : "bg-input border border-input-border hover:border-primary"
             }
           `}
-            >
-              {pageNumber}
-            </button>
-          );
-        })}
+              >
+                {pageNumber}
+              </button>
+            );
+          })}
 
-        {/* NEXT */}
-        <button
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPage))}
-          disabled={page === totalPage}
-          className={`h-8 w-8 xl:h-12 xl:w-12 text-xs xl:text-sm text-primary flex justify-center items-center rounded-full border-2 border-primary font-semibold transition
+          {/* NEXT */}
+          <button
+            onClick={() => setPage((prev) => Math.min(prev + 1, totalPage))}
+            disabled={page === totalPage}
+            className={`h-8 w-8 xl:h-12 xl:w-12 text-xs xl:text-sm text-primary flex justify-center items-center rounded-full border-2 border-primary font-semibold transition
         ${
           page === totalPage
             ? " text-primary/30 border-primary/30 cursor-not-allowed"
             : "border border-primary hover:border-primary"
         }
       `}
-        >
-          <FaArrowRight />
-        </button>
-      </div>
+          >
+            <FaArrowRight />
+          </button>
+        </div>
+      ) : (
+        <p className="text-center ">Tidak ada Promosi tersedia</p>
+      )}
     </div>
   );
 }

@@ -6,6 +6,7 @@ import useUserWarrantyHook from "@/hooks/user/warrantyDetail";
 import UserInformationTireWarranty from "./TiresInformation";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import { useUserStore } from "@/stores/useUserStore";
+import GaransiCardInformation from "./GaransiCardInformation";
 
 export default function DetailTireWarranty() {
   const { alertTop, setAlertTop, loading } = useUserWarrantyHook();
@@ -30,7 +31,7 @@ export default function DetailTireWarranty() {
           )}
 
           {/* ALERT SUKSES */}
-          {alertTop && data?.status !== 2 && (
+          {alertTop && data?.status !== (0 && 2) && (
             <div className="text-primary bg-secondary p-5 rounded-lg text-sm xl:text-base flex items-center justify-between font-bold">
               <p>
                 Selamat, {user?.name}! Anda telah berhasil mendaftarkan Garansi
@@ -39,6 +40,16 @@ export default function DetailTireWarranty() {
                 aman di jalan!
               </p>
               <ButtonClose onClick={() => setAlertTop(false)} />
+            </div>
+          )}
+
+          {/* ALERT MENUNGGU */}
+          {alertTop && data?.status === 0 && (
+            <div className="text-primary bg-secondary p-5 rounded-lg text-sm xl:text-base flex items-center justify-center font-bold">
+              <p>
+                Kami sedang memeriksa pendaftaran garansi ban Anda. Terima kasih
+                atas kesabaran Anda!
+              </p>
             </div>
           )}
 
@@ -61,8 +72,9 @@ export default function DetailTireWarranty() {
           )}
         </div>
         {/* bottom */}
-        <UserInformationWarranty />
-        <UserInformationTireWarranty />
+        {user && data && <GaransiCardInformation user={user} data={data} />}
+        {user && data && <UserInformationWarranty user={user} data={data} />}
+        {data && <UserInformationTireWarranty data={data} />}
       </div>{" "}
     </>
   );

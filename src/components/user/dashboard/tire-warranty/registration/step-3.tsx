@@ -1,7 +1,24 @@
 "use client";
 
-// BasePath for assets (must match next.config.ts)
-const BASE_PATH = "/id/warranty";
+import GeneralInput from "@/components/ui/GeneralInput";
+import Image from "next/image";
+import {
+  TireItem,
+  useWarrantyStore,
+} from "@/stores/useWarrantyRegistrationStore";
+import ActionLinkPrevGrey from "@/components/ui/button/ActionLinkPrevGrey";
+import BarcodeScanInput from "@/components/ui/BarcodeScanInput";
+import ButtonSubmit from "@/components/ui/button/ButtonSubmit";
+import { FaTrash } from "react-icons/fa";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { WarrantyRegister } from "@/services/Warranty";
+import { showErrorToast, showSuccessToast } from "@/helper/toastHelper";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import SubmitOverlay from "./Pop-up";
+import SearchableDropdown from "@/components/ui/SearchableDropdown";
+
 export default function WarrantyRegistrationStep3() {
   const router = useRouter();
   const { tires, addTire, updateTire, removeTire, resetForm } =
@@ -89,6 +106,15 @@ export default function WarrantyRegistrationStep3() {
         tire.tiredotnumber.trim() !== ""
     );
 
+  const isTireComplete = (tire: TireItem) => {
+    return (
+      tire.tirestype.trim() !== "" &&
+      tire.tiresize.trim() !== "" &&
+      tire.tirebarcode.trim() !== "" &&
+      tire.tiredotnumber.trim() !== ""
+    );
+  };
+
   return (
     <>
       <LoadingOverlay show={loading} />
@@ -102,7 +128,7 @@ export default function WarrantyRegistrationStep3() {
             <div className="flex flex-col lg:flex-row items-center gap-5 justify-between">
               <div className="w-full h-40 flex relative bg-secondary rounded-lg">
                 <Image
-                  src={`${BASE_PATH}/assets/warranty/tyre-barcode.png`}
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/warranty/tyre-barcode.png`}
                   alt="barcode"
                   width={9999}
                   height={9999}
@@ -120,7 +146,7 @@ export default function WarrantyRegistrationStep3() {
 
               <div className="w-full h-40 flex relative bg-secondary rounded-lg">
                 <Image
-                  src={`${BASE_PATH}/assets/warranty/tyre-dot.png`}
+                  src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/warranty/tyre-dot.png`}
                   alt="dot"
                   width={9999}
                   height={9999}
@@ -144,161 +170,119 @@ export default function WarrantyRegistrationStep3() {
 
             {/* ===== TIRES FORM ===== */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {tires.map((tire, index) => (
-                <div key={index}>
-                  <p>Data Ban {index + 1}</p>
+              {tires.map((tire, index) => {
+                const isDisabled =
+                  index !== 0 && !isTireComplete(tires[index - 1]);
 
-                  <div className="flex flex-col gap-5 mt-5 border border-input-border rounded-lg p-5">
-                    <SearchableDropdown
-                      label="Tipe Ban"
-                      name="tirestype"
-                      value={tire.tirestype}
-                      options={[
-                        {
-                          label: "BLUE RESPONSE TG",
-                          value: "BLUE RESPONSE TG",
-                        },
-                      ]}
-                      onChange={(val) => updateTire(index, "tirestype", val)}
-                    />
+                return (
+                  <div key={index}>
+                    <p>Data Ban {index + 1}</p>
 
-                    <SearchableDropdown
-                      name="tiresize"
-                      label="Ukuran Ban"
-                      value={tire.tiresize}
-                      placeholder="Masukkan Ukuran Ban"
-                      options={[
-                        { label: "185/55R15", value: "185/55R15" },
-                        { label: "185/55R16", value: "185/55R16" },
-                        { label: "185/65R15", value: "185/65R15" },
+                    <div className="flex flex-col gap-5 mt-5 border border-input-border rounded-lg p-5">
+                      <SearchableDropdown
+                        label="Tipe Ban"
+                        name="tirestype"
+                        value={tire.tirestype}
+                        disabled={isDisabled}
+                        options={[
+                          {
+                            label: "BLUE RESPONSE TG",
+                            value: "BLUE RESPONSE TG",
+                          },
+                        ]}
+                        onChange={(val) => updateTire(index, "tirestype", val)}
+                      />
 
-                        { label: "195/45R16", value: "195/45R16" },
-                        { label: "195/50R16", value: "195/50R16" },
-                        { label: "195/55R16", value: "195/55R16" },
-                        { label: "195/60R16", value: "195/60R16" },
-                        { label: "195/65R15", value: "195/65R15" },
+                      <SearchableDropdown
+                        name="tiresize"
+                        label="Ukuran Ban"
+                        value={tire.tiresize}
+                        disabled={isDisabled}
+                        placeholder="Masukkan Ukuran Ban"
+                        options={[
+                          { label: "185/55R15", value: "185/55R15" },
+                          { label: "185/55R16", value: "185/55R16" },
+                          { label: "185/65R15", value: "185/65R15" },
 
-                        { label: "205/45R17", value: "205/45R17" },
-                        { label: "205/50R17", value: "205/50R17" },
-                        { label: "205/55R16", value: "205/55R16" },
-                        { label: "205/55R17", value: "205/55R17" },
-                        { label: "205/60R16", value: "205/60R16" },
-                        { label: "205/65R15", value: "205/65R15" },
-                        { label: "205/65R16", value: "205/65R16" },
-                        { label: "205/70R15", value: "205/70R15" },
+                          { label: "195/45R16", value: "195/45R16" },
+                          { label: "195/50R16", value: "195/50R16" },
+                          { label: "195/55R16", value: "195/55R16" },
+                          { label: "195/60R16", value: "195/60R16" },
+                          { label: "195/65R15", value: "195/65R15" },
 
-                        { label: "215/45R17", value: "215/45R17" },
-                        { label: "215/50R17", value: "215/50R17" },
-                        { label: "215/55R17", value: "215/55R17" },
-                        { label: "215/60R17", value: "215/60R17" },
-                        { label: "215/65R16", value: "215/65R16" },
-                        { label: "215/70R15", value: "215/70R15" },
+                          { label: "205/45R17", value: "205/45R17" },
+                          { label: "205/50R17", value: "205/50R17" },
+                          { label: "205/55R16", value: "205/55R16" },
+                          { label: "205/55R17", value: "205/55R17" },
+                          { label: "205/60R16", value: "205/60R16" },
+                          { label: "205/65R15", value: "205/65R15" },
+                          { label: "205/65R16", value: "205/65R16" },
+                          { label: "205/70R15", value: "205/70R15" },
 
-                        { label: "225/40R18", value: "225/40R18" },
-                        { label: "225/45R18", value: "225/45R18" },
-                        { label: "225/50R17", value: "225/50R17" },
-                        { label: "225/50R18", value: "225/50R18" },
-                        { label: "225/55R17", value: "225/55R17" },
-                        { label: "225/55R18", value: "225/55R18" },
-                        { label: "225/60R18", value: "225/60R18" },
+                          { label: "215/45R17", value: "215/45R17" },
+                          { label: "215/50R17", value: "215/50R17" },
+                          { label: "215/55R17", value: "215/55R17" },
+                          { label: "215/60R17", value: "215/60R17" },
+                          { label: "215/65R16", value: "215/65R16" },
+                          { label: "215/70R15", value: "215/70R15" },
 
-                        { label: "235/45R18", value: "235/45R18" },
-                        { label: "235/50R18", value: "235/50R18" },
-                        { label: "235/55R18", value: "235/55R18" },
-                        { label: "235/55R19", value: "235/55R19" },
-                        { label: "235/60R18", value: "235/60R18" },
-                      ]}
-                      onChange={(val) => updateTire(index, "tiresize", val)}
-                      required
-                    />
+                          { label: "225/40R18", value: "225/40R18" },
+                          { label: "225/45R18", value: "225/45R18" },
+                          { label: "225/50R17", value: "225/50R17" },
+                          { label: "225/50R18", value: "225/50R18" },
+                          { label: "225/55R17", value: "225/55R17" },
+                          { label: "225/55R18", value: "225/55R18" },
+                          { label: "225/60R18", value: "225/60R18" },
 
-                    {/* <DropdownInput
-                      name="tiresize"
-                      label="Ukuran Ban"
-                      value={tire.tiresize}
-                      placeholder="Masukkan Ukuran Ban"
-                      options={[
-                        { label: "185/55R15", value: "185/55R15" },
-                        { label: "185/55R16", value: "185/55R16" },
-                        { label: "185/65R15", value: "185/65R15" },
+                          { label: "235/45R18", value: "235/45R18" },
+                          { label: "235/50R18", value: "235/50R18" },
+                          { label: "235/55R18", value: "235/55R18" },
+                          { label: "235/55R19", value: "235/55R19" },
+                          { label: "235/60R18", value: "235/60R18" },
+                        ]}
+                        onChange={(val) => updateTire(index, "tiresize", val)}
+                        required
+                      />
 
-                        { label: "195/45R16", value: "195/45R16" },
-                        { label: "195/50R16", value: "195/50R16" },
-                        { label: "195/55R16", value: "195/55R16" },
-                        { label: "195/60R16", value: "195/60R16" },
-                        { label: "195/65R15", value: "195/65R15" },
+                      <BarcodeScanInput
+                        name="tirebarcode"
+                        label="Kode Barcode Ban"
+                        required
+                        disabled={isDisabled}
+                        value={tire.tirebarcode}
+                        onChange={(value) =>
+                          updateTire(index, "tirebarcode", value ?? "")
+                        }
+                      />
 
-                        { label: "205/45R17", value: "205/45R17" },
-                        { label: "205/50R17", value: "205/50R17" },
-                        { label: "205/55R16", value: "205/55R16" },
-                        { label: "205/55R17", value: "205/55R17" },
-                        { label: "205/60R16", value: "205/60R16" },
-                        { label: "205/65R15", value: "205/65R15" },
-                        { label: "205/65R16", value: "205/65R16" },
-                        { label: "205/70R15", value: "205/70R15" },
+                      <GeneralInput
+                        name="tiredotnumber"
+                        label="DOT Tire Number"
+                        value={tire.tiredotnumber}
+                        disabled={isDisabled}
+                        placeholder="Masukkan DOT Tire Number"
+                        maxLength={8}
+                        required
+                        reddot
+                        onChange={(e) =>
+                          updateTire(index, "tiredotnumber", e.target.value)
+                        }
+                        className="uppercase"
+                      />
 
-                        { label: "215/45R17", value: "215/45R17" },
-                        { label: "215/50R17", value: "215/50R17" },
-                        { label: "215/55R17", value: "215/55R17" },
-                        { label: "215/60R17", value: "215/60R17" },
-                        { label: "215/65R16", value: "215/65R16" },
-                        { label: "215/70R15", value: "215/70R15" },
-
-                        { label: "225/40R18", value: "225/40R18" },
-                        { label: "225/45R18", value: "225/45R18" },
-                        { label: "225/50R17", value: "225/50R17" },
-                        { label: "225/50R18", value: "225/50R18" },
-                        { label: "225/55R17", value: "225/55R17" },
-                        { label: "225/55R18", value: "225/55R18" },
-                        { label: "225/60R18", value: "225/60R18" },
-
-                        { label: "235/45R18", value: "235/45R18" },
-                        { label: "235/50R18", value: "235/50R18" },
-                        { label: "235/55R18", value: "235/55R18" },
-                        { label: "235/55R19", value: "235/55R19" },
-                        { label: "235/60R18", value: "235/60R18" },
-                      ]}
-                      onChange={(e) =>
-                        updateTire(index, "tiresize", e.target.value)
-                      }
-                      required
-                    /> */}
-
-                    <BarcodeScanInput
-                      name="tirebarcode"
-                      label="Kode Barcode Ban"
-                      required
-                      value={tire.tirebarcode}
-                      onChange={(value) =>
-                        updateTire(index, "tirebarcode", value ?? "")
-                      }
-                    />
-
-                    <GeneralInput
-                      name="tiredotnumber"
-                      label="DOT Tire Number"
-                      value={tire.tiredotnumber}
-                      placeholder="Masukkan DOT Tire Number"
-                      maxLength={8}
-                      required
-                      reddot
-                      onChange={(e) =>
-                        updateTire(index, "tiredotnumber", e.target.value)
-                      }
-                    />
-
-                    {tires.length > 2 && (
-                      <button
-                        type="button"
-                        onClick={() => removeTire(index)}
-                        className="text-red-500 text-sm self-end"
-                      >
-                        <FaTrash />
-                      </button>
-                    )}
+                      {tires.length > 2 && (
+                        <button
+                          type="button"
+                          onClick={() => removeTire(index)}
+                          className="text-red-500 text-sm self-end"
+                        >
+                          <FaTrash />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {tires.length < 5 && (

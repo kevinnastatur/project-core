@@ -26,7 +26,8 @@ const satoshi = localFont({
 
 export const metadata: Metadata = {
   title: "Dunlop Warranty",
-  description: "Dunlop Warranty System",
+  description:
+    "Website Dunlop Warranty dirancang untuk memudahkan pengguna produk Dunlop dalam mengakses layanan purna jual seperti permintaan pendaftaran warranty, service berkala, & claim garansi.",
   robots: {
     index: false,
     follow: false,

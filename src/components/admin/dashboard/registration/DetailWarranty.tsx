@@ -555,6 +555,7 @@ export default function AdminDetailWarranty() {
                   alt=""
                   width={9999}
                   height={9999}
+                  unoptimized
                   className="w-full h-60 xl:h-80 2xl:h-100 object-contain"
                 />
               </div>
@@ -579,6 +580,7 @@ export default function AdminDetailWarranty() {
                     alt="Preview Odometer"
                     width={9999}
                     height={9999}
+                    unoptimized
                     className="w-full h-full object-contain rounded-lg"
                   />
                 </div>
@@ -596,7 +598,7 @@ export default function AdminDetailWarranty() {
                 <div key={index}>
                   <p className="font-bold text-white">Data Ban {index + 1}</p>
 
-                  <div className="flex flex-col gap-5 mt-3 border border-input-border rounded-lg p-5">
+                  <div className="flex flex-col gap-5 mt-3 border border-input-border rounded-lg p-5 uppercase">
                     {(
                       [
                         ["tire_type", "Tipe Ban"],

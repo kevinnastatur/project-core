@@ -1,12 +1,17 @@
 import DateFormat from "@/components/common/DateFormat";
-import useUserWarrantyHook from "@/hooks/user/warrantyDetail";
-import { useUserStore } from "@/stores/useUserStore";
+import { WarrantyItemDetail } from "@/types/warranty";
+
 import { HiCalendarDateRange } from "react-icons/hi2";
 
-export default function UserInformationWarranty() {
-  const { user } = useUserStore();
-  const { data } = useUserWarrantyHook();
+interface UserInformationWarrantyProps {
+  data: WarrantyItemDetail;
+  user: WarrantyItemDetail["user"];
+}
 
+export default function UserInformationWarranty({
+  data,
+  user,
+}: UserInformationWarrantyProps) {
   return (
     <div className=" flex flex-col gap-3 font-bold text-sm xl:text-base">
       <p>Informasi Pengguna</p>

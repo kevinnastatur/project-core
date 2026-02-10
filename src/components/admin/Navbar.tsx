@@ -168,11 +168,42 @@ export default function AdminNavbar() {
       child: ``,
       childActive: false,
     },
+    // klaim garansi - pengajuan list
+    {
+      match: (pathname) => pathname === "/admin/dashboard/klaim-garansi/pengajuan",
+        parent: "Klaim Garansi",
+        child: "Pengajuan",
+        childActive: true,
+    },
+    // klaim garansi - pengajuan detail
+    {
+      match: (pathname) =>
+        pathname.startsWith("/admin/dashboard/klaim-garansi/pengajuan/") &&
+        pathname !== "/admin/dashboard/klaim-garansi/pengajuan",
+        parent: "Klaim Garansi",
+        child: "Pengajuan Klaim Garansi",
+        childActive: true,
+    },
+    // klaim garansi - appointment list
+    {
+      match: (pathname) =>
+        pathname === "/admin/dashboard/klaim-garansi/appointment",
+      parent: "Klaim Garansi",
+      child: "Appointment",
+      childActive: true,
+    },
+    // klaim garansi - appointment detail
+    {
+      match: (pathname) =>
+        pathname.startsWith("/admin/dashboard/klaim-garansi/appointment/") &&
+        pathname !== "/admin/dashboard/klaim-garansi/appointment",
+      parent: "Klaim Garansi",
+      child: "Detail Appointment",
+      childActive: true,
+    },
   ];
 
   const navbar = NAVBAR_CONFIG.find((item) => item.match(pathname));
-
-  if (!navbar) return null;
 
   useEffect(() => {
     const getNotif = async () => {
@@ -193,6 +224,8 @@ export default function AdminNavbar() {
   useEffect(() => {
     setNotifList(notifData.slice(0, visibleCount));
   }, [notifData, visibleCount]);
+
+  if (!navbar) return null;
 
   const handleLoadMore = () => {
     setVisibleCount((prev) => prev + PAGE_SIZE);
@@ -218,6 +251,7 @@ export default function AdminNavbar() {
       setLoadingId(null);
     }
   };
+  
   const handleView = async (item: any) => {
     setNotifShow(false);
 

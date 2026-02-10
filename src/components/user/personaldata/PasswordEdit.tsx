@@ -88,12 +88,13 @@ export default function PasswordEdit() {
           onChange={(e) => setPassword_Confirmation(e.target.value)}
         />
       </div>
-      <div className=" grid grid-cols-2 gap-3  w-full  items-center">
+      <div className=" grid grid-cols-1 md:grid-cols-2 gap-3  w-full  items-center">
         <ActionLinkPrevGrey href="/dashboard/overview" label="Batalkan" />
         <ButtonSubmit
           label="Simpan Perubahan"
           onClick={handleSubmit}
           disabled={disable}
+          className="text-sm xl:text-base border-none "
         />
       </div>
     </div>

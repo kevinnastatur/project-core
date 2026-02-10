@@ -34,7 +34,7 @@ export default function OverviewHeader() {
           className=" border border-input-border rounded-lg p-5  justify-between flex flex-col gap-2 text-lg xl:text-xl transition-all duration-300
   hover:border-primary  cursor-pointer h-full"
           style={{
-            backgroundImage: "url('/assets/overview/images.png')",
+            backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_PATH}/assets/overview/images.png)`,
             backgroundSize: "cover",
           }}
         >
@@ -74,7 +74,7 @@ export default function OverviewHeader() {
           className=" border border-input-border rounded-lg p-5  justify-between flex flex-col gap-2 text-lg xl:text-xl transition-all duration-300
   hover:border-primary  cursor-pointer h-full"
           style={{
-            backgroundImage: "url('/assets/overview/images.png')",
+            backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_PATH}/assets/overview/images.png)`,
             backgroundSize: "cover",
           }}
         >
@@ -99,7 +99,7 @@ export default function OverviewHeader() {
           className=" border border-input-border rounded-lg p-5  justify-between flex flex-col gap-2 text-lg xl:text-xl transition-all duration-300
   hover:border-primary  cursor-pointer h-full"
           style={{
-            backgroundImage: "url('/assets/overview/images.png')",
+            backgroundImage: `url(${process.env.NEXT_PUBLIC_BASE_PATH}/assets/overview/images.png)`,
             backgroundSize: "cover",
           }}
         >

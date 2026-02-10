@@ -20,7 +20,6 @@ export interface Tire {
 
 export interface WarrantyRegisterData {
   storeid: number;
-
   brand: string;
   model: string;
   plate_number: string;

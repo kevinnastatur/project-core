@@ -2,18 +2,30 @@
 
 interface StatusBadgeProps {
   label: string;
-  variant: "scheduled" | "verified" | "outOfStock" | "adminVerification" | "rejectedDunlop" | "rejectedShop";
+  variant: "completed" | "scheduled" | "verified" | "outOfStock" | "adminVerification" | "rejectedDunlop" | "rejectStore" | "pending" | "rejectedShop" | "rejectAdmin" | "approveAdmin" | "stockReady" | "stockEmpty" | "apptReq";
   showIcon?: boolean;
   tooltip?: string;
 }
 
 const VARIANT_STYLES: Record<StatusBadgeProps["variant"], string> = {
+  pending: "bg-[#DFAB00] text-black",
   scheduled: "bg-[#DFAB00] text-black",
   verified: "bg-[#00DF80] text-black",
   outOfStock: "bg-[#DF3400] text-white",
   adminVerification: "bg-[#DFAB00] text-black",
+  // approveAdmin should be green per requested mapping (status 2)
+  approveAdmin: "bg-[#00DF80] text-black",
   rejectedDunlop: "bg-[#DF3400] text-white",
   rejectedShop: "bg-[#DF3400] text-white",
+  rejectStore: "bg-[#DF3400] text-white",
+  rejectAdmin: "bg-[#DF3400] text-white",
+  // completed should be green (status 7)
+  completed: "bg-[#00DF80] text-black",
+  // stockReady should be green (status 3)
+  stockReady: "bg-[#00DF80] text-black",
+  stockEmpty: "bg-[#DF3400] text-white",
+  // apptReq should be yellow/orange (status 5)
+  apptReq: "bg-[#DFAB00] text-black",
 };
 
 export default function StatusBadge({

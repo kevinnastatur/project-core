@@ -1,7 +1,10 @@
 "use client";
 
-// BasePath for assets (must match next.config.ts)
-// const BASE_PATH = "/id/warranty";
+import Image from "next/image";
+import Link from "next/link";
+import Button from "../../ui/button/Button";
+import { IoAlertCircleOutline } from "react-icons/io5";
+
 export default function NotRegisteredComponents() {
   return (
     <main className="flex flex-col py-10 lg:py-0 gap-5 justify-center lg:flex-row lg:justify-between w-full h-full min-h-screen  2xl:w-480 mx-auto ">
@@ -24,11 +27,11 @@ export default function NotRegisteredComponents() {
       <div className="w-full lg:w-[50%] lg:h-screen p-3 hidden lg:block">
         <div className="  w-full h-full   rounded-2xl">
           <Image
-            src="/assets/auth/images2.png"
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/auth/images3.jpeg`}
             alt="Register Image"
             width={9999}
             height={9999}
-            className="w-full h-full object-cover rounded-2xl bg-white "
+            className="w-full h-full object-fit rounded-2xl bg-white "
           />
         </div>
       </div>

@@ -1,0 +1,301 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { CiSearch } from "react-icons/ci";
+import { FiDownload } from "react-icons/fi";
+import { MdOutlineRemoveRedEye } from "react-icons/md";
+import Link from "next/link";
+import LoadingOverlay from "@/components/ui/LoadingOverlay";
+import { getWarrantyClaimIndex } from "@/services/admin/WarrantyClaim";
+import Pagination from "@/components/ui/Pagination";
+import { showSuccessToast } from "@/helper/toastHelper";
+
+interface ClaimWarrantyData {
+  id: number;
+  claim_submission_code: string;
+  warranty_code: string;
+  name: string;
+  plate_number: string;
+  odometer: number;
+  status_label: string;
+}
+
+export default function PengajuanView() {
+  const [data, setData] = useState<ClaimWarrantyData[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<string>("");
+  const [perPage, setPerPage] = useState<10 | 20 | 30>(10);
+  const [totalPages, setTotalPages] = useState(1);
+  const [pagination, setPagination] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<number[]>([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await getWarrantyClaimIndex(page, perPage, search, status);
+        
+        if (res.success && res.data) {
+          setPagination(res.data);
+          setData(res.data.data ?? []);
+          setTotalPages(res.data.last_page ?? 1);
+        }
+      } catch (error) {
+        console.error(error);
+        setData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [page, search, perPage, status]);
+
+  const getPagination = (
+    current: number,
+    total: number
+  ): (number | "...")[] => {
+    const pages: (number | "...")[] = [];
+
+    if (total <= 3) {
+      for (let i = 1; i <= total; i++) pages.push(i);
+      return pages;
+    }
+
+    pages.push(1);
+
+    if (current > 3) {
+      pages.push("...");
+    }
+
+    const start = Math.max(2, current - 1);
+    const end = Math.min(total - 1, current + 1);
+
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+
+    if (current < total - 2) {
+      pages.push("...");
+    }
+
+    pages.push(total);
+
+    return pages;
+  };
+
+  const handleExport = () => {
+    try {
+      setLoading(true);
+
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+    
+      const params = new URLSearchParams();
+      if (status) {
+        params.append("status", status);
+      }
+      
+      const exportUrl = `${basePath}/api/claim-warranty/principal/export${params.toString() ? `?${params.toString()}` : ''}`;
+      
+      window.location.href = exportUrl;
+
+      showSuccessToast(
+        "Export Started",
+        "File sedang diproses dan akan terunduh otomatis"
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(data.map(item => item.id));
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleSelectItem = (id: number) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter(itemId => itemId !== id));
+      setSelectAll(false);
+    } else {
+      const newSelected = [...selectedIds, id];
+      setSelectedIds(newSelected);
+      if (newSelected.length === data.length) {
+        setSelectAll(true);
+      }
+    }
+  };
+
+  return (
+    <>
+      <LoadingOverlay show={loading} />
+      <div className="w-full flex flex-col gap-5 p-5 text-sm xl:text-base">
+        {/* header */}
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+            <div className="text-white font-bold text-lg xl:text-xl">
+              <p>Permintaan Klaim Garansi Ban</p>
+              <p className="text-base xl:text-lg text-input-placeholder">
+                Menampilkan keseluruhan permintaan Klaim Garansi Ban
+              </p>
+            </div>
+          </div>
+
+          {/* Search and Export */}
+          <div className="box-container flex flex-col gap-5">
+            <div className="flex flex-col md:flex-row gap-5 justify-between">
+              <div className="relative w-full md:w-70">
+                <input
+                  placeholder="Cari Berdasarkan ID Warranty"
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      setPage(1);
+                      setSearch(searchInput);
+                    }
+                  }}
+                  className="bg-input py-3 pl-3 pr-10 rounded-lg border border-input-border text-white w-full"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPage(1);
+                    setSearch(searchInput);
+                  }}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-input-border text-xl hover:text-white transition"
+                >
+                  <CiSearch />
+                </button>
+              </div>
+              <button
+                onClick={handleExport}
+                className="bg-primary rounded-lg py-3 px-5 text-secondary font-bold flex justify-center items-center gap-2 cursor-pointer"
+              >
+                <FiDownload />
+                Export Data
+              </button>
+            </div>
+
+            {/* Table */}
+            <div className="overflow-x-auto rounded-lg w-full text-xs xl:text-sm">
+              <table className="table-auto text-left text-white w-full">
+                <thead className="bg-[#333333] text-sm">
+                  <tr>
+                    <th className="px-5 py-4">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4" 
+                        checked={selectAll}
+                        onChange={handleSelectAll}
+                      />
+                    </th>
+                    <th className="px-5 py-4 whitespace-nowrap">
+                      ID Klaim Garansi
+                    </th>
+                    <th className="px-5 py-4 whitespace-nowrap">ID Warranty</th>
+                    <th className="px-5 py-4 whitespace-nowrap">
+                      Nama Lengkap
+                    </th>
+                    <th className="px-5 py-4 whitespace-nowrap">
+                      Plat Kendaraan
+                    </th>
+                    <th className="px-5 py-4 whitespace-nowrap">Odometer</th>
+                    <th className="px-5 py-4 whitespace-nowrap flex items-center">
+                      Status
+                    </th>
+                    <th className="px-5 py-4"></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {loading ? (
+                    <tr>
+                      <td colSpan={8} className="text-center py-6">
+                        Loading...
+                      </td>
+                    </tr>
+                  ) : data.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="text-center py-6">
+                        Data tidak ditemukan
+                      </td>
+                    </tr>
+                  ) : (
+                    data.map((item) => (
+                      <tr
+                        key={item.id}
+                        className="bg-background text-text-secondary hover:bg-opacity-80 transition"
+                      >
+                        <td className="px-5 py-4">
+                          <input 
+                            type="checkbox" 
+                            className="w-4 h-4" 
+                            checked={selectedIds.includes(item.id)}
+                            onChange={() => handleSelectItem(item.id)}
+                          />
+                        </td>
+                        <td className="px-5 py-4">
+                          {item?.claim_submission_code ?? "-"}
+                        </td>
+                        <td className="px-5 py-4 text-primary font-semibold">
+                          {item?.warranty_code ?? "-"}
+                        </td>
+                        <td className="px-5 py-4">
+                          {item?.name ?? "-"}
+                        </td>
+                        <td className="px-5 py-4">
+                          {item?.plate_number ?? "-"}
+                        </td>
+                        <td className="px-5 py-4">{item?.odometer ?? 0} km</td>
+                        <td className="px-5 py-4 whitespace-nowrap">
+                          <span className="bg-primary px-3 py-2 rounded-full font-bold text-secondary">
+                            {item?.status_label ?? "Menunggu Persetujuan"}
+                          </span>
+                        </td>
+                        <td className="py-3 text-primary font-semibold cursor-pointer whitespace-nowrap pr-5">
+                          <Link
+                            href={`/admin/dashboard/klaim-garansi/pengajuan/${item.id}`}
+                            className="flex items-center gap-2"
+                          >
+                            Lihat Detail
+                            <MdOutlineRemoveRedEye />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination */}
+            <Pagination
+              page={page}
+              totalPages={totalPages}
+              perPage={perPage}
+              setPage={setPage}
+              setPerPage={setPerPage}
+              getPagination={getPagination}
+              pagination={pagination}
+              label="data Request Pengajuan"
+            />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}

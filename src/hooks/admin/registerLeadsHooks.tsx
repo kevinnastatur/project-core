@@ -136,18 +136,24 @@ export default function useRegisterLeadsHook() {
   };
 
   const handleExport = () => {
-    setLoading(true);
+    try {
+      setLoading(true);
 
-    window.open("/api/export/register-data", "_self");
+      const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
 
-    showSuccessToast(
-      "Export Started",
-      "File sedang diproses dan akan terunduh otomatis"
-    );
+      window.location.href = `${basePath}/api/export/register-data`;
 
-    setTimeout(() => {
-      setLoading(false);
-    }, 1200);
+      showSuccessToast(
+        "Export Started",
+        "File sedang diproses dan akan terunduh otomatis"
+      );
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    }
   };
   return {
     loading,

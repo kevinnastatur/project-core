@@ -10,9 +10,6 @@ import PasswordInput from "../ui/PasswordInput";
 import ConfirmPasswordInput from "../ui/ConfirmPasswordInput";
 import { useRouter, useSearchParams } from "next/navigation";
 
-// BasePath for assets (must match next.config.ts)
-// const BASE_PATH = "/id/warranty";
-
 export default function ResetPasswordForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,7 +61,7 @@ export default function ResetPasswordForm() {
         <div className="flex flex-col gap-3 w-full px-5 lg:p-0 lg:w-[85%] xl:lg:w-[65%] justify-center text-white ">
           <div className=" w-35 xl:w-45 h-full rounded-2xl">
             <Image
-              src="/assets/logo-default.svg"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/logo-default.svg`}
               alt="dunlop-logo"
               width={9999}
               height={9999}
@@ -102,11 +99,11 @@ export default function ResetPasswordForm() {
       <div className="w-full lg:w-[50%] lg:h-screen p-3 hidden lg:block">
         <div className="  w-full h-full   rounded-2xl">
           <Image
-            src="/assets/auth/images2.png"
+            src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/auth/images3.jpeg`}
             alt="Register Image"
             width={9999}
             height={9999}
-            className="w-full h-full object-cover rounded-2xl bg-white "
+            className="w-full h-full object-contain rounded-2xl  "
           />
         </div>
       </div>

@@ -53,19 +53,19 @@ export default function OverviewBanner() {
 
   return (
     <div className="relative w-full overflow-hidden rounded-lg p-5">
-      <div className="relative w-full aspect-square md:aspect-auto md:h-60 lg:h-80 xl:h-100 rounded-lg">
+      <div className="relative w-full aspect-square md:aspect-auto md:h-full rounded-lg">
         <Image
           src={item.image_desktop}
           alt={item.heading}
-          fill
-          priority
+          width={9999}
+          height={9999}
           className="object-cover hidden md:block rounded-lg"
         />
         <Image
           src={item.image_mobile}
           alt={item.heading}
-          fill
-          priority
+          width={9999}
+          height={9999}
           className="object-cover block md:hidden rounded-lg"
         />
 
@@ -80,7 +80,7 @@ export default function OverviewBanner() {
               href={item.url}
               className="bg-primary text-secondary px-5 py-3 rounded-lg text-sm w-fit"
             >
-              Lihat Semua
+              Selengkapnya
             </Link>
           </div>
 

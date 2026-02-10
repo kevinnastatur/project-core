@@ -8,7 +8,6 @@ import PasswordInput from "../ui/PasswordInput";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-
 import LoadingOverlay from "../ui/LoadingOverlay";
 import { postUserLogin } from "@/services/Login";
 import ResendOverlay from "./Pop-UpResendPassword";
@@ -18,36 +17,36 @@ export default function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [cfTurnstileToken, setCfTurnstileToken] = useState("");
+  // const [cfTurnstileToken, setCfTurnstileToken] = useState("");
   const [showSubmitOverlay, setShowSubmitOverlay] = useState(false);
 
-  useEffect(() => {
-    const script = document.createElement("script");
-    script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
-    script.async = true;
-    document.body.appendChild(script);
+  // useEffect(() => {
+  //   const script = document.createElement("script");
+  //   script.src = "https://challenges.cloudflare.com/turnstile/v0/api.js";
+  //   script.async = true;
+  //   document.body.appendChild(script);
 
-    return () => {
-      document.body.removeChild(script);
-    };
-  }, []);
+  //   return () => {
+  //     document.body.removeChild(script);
+  //   };
+  // }, []);
 
   if (typeof window !== "undefined") {
-    (window as any).onTurnstileVerify = (token: string) => {
-      setCfTurnstileToken(token);
-    };
+    // (window as any).onTurnstileVerify = (token: string) => {
+    //   setCfTurnstileToken(token);
+    // };
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!cfTurnstileToken) {
-      toast.error("Please verify you are not a robot");
-      setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-      return;
-    }
+    // if (!cfTurnstileToken) {
+    //   toast.error("Please verify you are not a robot");
+    //   setTimeout(() => {
+    //     window.location.reload();
+    //   }, 2000);
+    //   return;
+    // }
 
     setLoading(true);
 
@@ -55,7 +54,7 @@ export default function LoginForm() {
       const result = await postUserLogin({
         email,
         password,
-        cf_turnstile_token: cfTurnstileToken,
+        // cf_turnstile_token: cfTurnstileToken,
       });
 
       if (!result.success || !result.token) {
@@ -94,7 +93,7 @@ export default function LoginForm() {
           <div className="flex flex-col gap-3 w-full px-5 lg:p-0 lg:w-[85%] xl:lg:w-[65%] justify-center text-white ">
             <div className=" w-full h-full rounded-2xl">
               <Image
-                src="/assets/logo-default.svg"
+                src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/logo-default.svg`}
                 alt="dunlop-logo"
                 width={9999}
                 height={9999}
@@ -126,11 +125,11 @@ export default function LoginForm() {
                 required
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <div
+              {/* <div
                 className="cf-turnstile"
                 data-sitekey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY}
                 data-callback="onTurnstileVerify"
-              />
+              /> */}
               <Button label="Masuk" />
             </form>
             <Link
@@ -147,14 +146,14 @@ export default function LoginForm() {
             </div>
           </div>
         </div>
-        <div className="w-full lg:w-[50%] lg:h-screen p-3 hidden lg:block">
+        <div className="w-full lg:w-[50%]  lg:h-screen p-3 hidden lg:block">
           <div className="  w-full h-full   rounded-2xl">
             <Image
-              src="/assets/auth/images2.png"
+              src={`${process.env.NEXT_PUBLIC_BASE_PATH}/assets/auth/images3.jpeg`}
               alt="Register Image"
               width={9999}
               height={9999}
-              className="w-full h-full object-cover rounded-2xl bg-white "
+              className="w-full h-full object-contain rounded-2xl bg-transparent "
             />
           </div>
         </div>

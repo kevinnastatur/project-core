@@ -13,6 +13,7 @@ import { BsPatchCheck } from "react-icons/bs";
 import { LuUser } from "react-icons/lu";
 import { useSearchParams } from "next/navigation";
 import { BiSolidLock } from "react-icons/bi";
+import { TbRosetteDiscount } from "react-icons/tb";
 
 type NavbarConfig = {
   match: (pathname: string) => boolean;
@@ -42,13 +43,13 @@ export default function TabPersonalData() {
       link: "/dashboard/account-setting/password",
       hover: "/dashboard/account-setting/password",
     },
-    // {
-    //   id: 3,
-    //   src: <FaQuestion />,
-    //   title: "FAQ",
-    //   link: "/dashboard/account-setting/faq",
-    //   hover: "/dashboard/account-setting/faq",
-    // },
+    {
+      id: 3,
+      src: <TbRosetteDiscount />,
+      title: "Promosi",
+      link: "/dashboard/promotion",
+      hover: "/dashboard/promotion",
+    },
   ];
 
   const HandleLogout = () => {
@@ -65,26 +66,36 @@ export default function TabPersonalData() {
     }, 1500);
   };
   return (
-    <nav className="flex flex-col gap-5 w-full p-5 bg-background">
-      <div className=" hidden lg:flex lg:flex-col gap-3 text-white text-sm xl:text-base w-full   ">
-        <div className="flex flex-wrap gap-3 items-center">
+    <nav className="w-full p-5 bg-background">
+      <div className="flex flex-col gap-5 text-white text-sm xl:text-base">
+        <div
+          className="
+          flex gap-3 items-center
+          w-full overflow-x-auto
+          flex-nowrap
+          scrollbar-hide
+        "
+        >
           {Tab.map((item) => {
             const isActive =
               pathname === item.hover || pathname.startsWith(item.hover + "/");
 
             return (
-              <div className="flex flex-col relative ">
-                <Link
-                  href={item.link}
-                  key={item.id}
-                  className={`font-semibold flex gap-2 items-center hover:bg-[#333333] px-5 py-3 rounded-lg  ${
-                    isActive ? "bg-[#333333]" : ""
-                  }`}
-                >
-                  {item.src}
-                  <p>{item.title}</p>
-                </Link>
-              </div>
+              <Link
+                key={item.id}
+                href={item.link}
+                className={`
+                shrink-0
+                font-semibold flex gap-2 items-center
+                px-5 py-3 rounded-lg
+                hover:bg-[#333333]
+                ${isActive ? "bg-[#333333]" : ""}
+                 ${item.id === 3 ? "hidden lg:flex" : ""}
+              `}
+              >
+                {item.src}
+                <p className="whitespace-nowrap">{item.title}</p>
+              </Link>
             );
           })}
         </div>

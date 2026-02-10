@@ -4,8 +4,6 @@ import { FaPlus } from "react-icons/fa";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 import CardHistoryWarranty from "./ui/CardHistory";
 import Link from "next/link";
-
-import { WarrantyStatus } from "@/types/warranty";
 import LoadingOverlay from "@/components/ui/LoadingOverlay";
 import Pagination from "@/components/ui/Pagination";
 import useHistoryTireHooks from "@/hooks/user/HistoryTireHooks";
@@ -25,6 +23,7 @@ export default function HistoryTireWarranty() {
     perpage,
     setPerPage,
     getPagination,
+    STATUS_OPTIONS,
   } = useHistoryTireHooks();
 
   return (
@@ -47,22 +46,17 @@ export default function HistoryTireWarranty() {
 
             {open && (
               <div className="absolute right-0 mt-2 w-60 bg-primary text-secondary rounded-lg shadow-lg z-50">
-                {[
-                  "Proses Verifikasi",
-                  "Perbaikan",
-                  "Ditolak",
-                  "Garansi Aktif",
-                ].map((label, s) => (
+                {STATUS_OPTIONS.map((item) => (
                   <button
-                    key={s}
+                    key={item.label}
                     onClick={() => {
-                      setStatus(s === 0 ? null : (s as WarrantyStatus));
+                      setStatus(item.value);
                       setPage(1);
                       setOpen(false);
                     }}
                     className="w-full text-left px-4 py-3 hover:bg-gray-100"
                   >
-                    {label}
+                    {item.label}
                   </button>
                 ))}
               </div>

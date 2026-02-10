@@ -182,6 +182,9 @@ export default function EditAccount() {
     } catch (error) {
       console.error(error);
       showErrorToast("Error", "Gagal memperbarui account");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } finally {
       setLoading(false);
     }
@@ -206,6 +209,9 @@ export default function EditAccount() {
     } catch (error) {
       console.error(error);
       showErrorToast("Error", "Gagal menghapus account");
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } finally {
       setLoading(false);
     }

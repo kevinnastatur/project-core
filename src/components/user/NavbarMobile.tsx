@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BsPatchCheck } from "react-icons/bs";
 import { CgMenuGridO } from "react-icons/cg";
+import { LuUser,LuShield } from "react-icons/lu";
 import { TbRosetteDiscount } from "react-icons/tb";
 
 type IconProps = {
@@ -29,10 +30,18 @@ export default function NavbarMobile() {
       desc: "Garansi Ban",
     },
     {
+      id: 5,
+      src: <LuShield />,
+      title: "Klaim Garansi",
+      link: "/dashboard/klaim-garansi",
+      hover: "/dashboard/klaim-garansi",
+      desc: "Garansi Ban",
+    },
+    {
       id: 3,
-      src: <TbRosetteDiscount />,
-      title: "Promosi",
-      link: "/dashboard/promotion",
+      src: <LuUser />,
+      title: "Profile",
+      link: "/dashboard/account-setting/personal-data",
       desc: "BsPatchCheck",
     },
   ];
@@ -42,9 +51,10 @@ export default function NavbarMobile() {
         {Tab.map((item) => {
           const isActive = pathname === item.link;
           return (
-            <div key={item.id} className="flex flex-col gap-0 relative w-full mx-auto">
+            <div className="flex flex-col gap-0 relative w-full mx-auto">
               {" "}
               <Link
+                key={item.id}
                 href={item.link}
                 className={`font-semibold min-w-15  flex flex-col gap-2 items-center py-3 rounded-lg transition
               ${isActive ? "text-[#333333]" : "text-[#6A6A6A]"}

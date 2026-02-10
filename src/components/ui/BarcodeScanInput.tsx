@@ -12,6 +12,7 @@ interface BarcodeScanInputProps {
   name: string;
   required?: boolean;
   value?: string;
+  disabled?: boolean;
   onChange: (value: string | null) => void;
 }
 
@@ -20,6 +21,7 @@ export default function BarcodeScanInput({
   description = "Scan Code Barcode Pada Ban",
   required = false,
   value,
+  disabled = false,
   onChange,
 }: BarcodeScanInputProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -42,9 +44,14 @@ export default function BarcodeScanInput({
     }
   }, [value]);
 
-  /* ================= START SCAN ================= */
+  useEffect(() => {
+    if (disabled) {
+      stopScan();
+    }
+  }, [disabled]);
+
   const startScan = async () => {
-    if (isScanning) return;
+    if (disabled || isScanning) return;
 
     setError(null);
     setIsScanning(true);
@@ -65,7 +72,6 @@ export default function BarcodeScanInput({
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
 
-      // ⏱ 10 detik timeout
       scanTimeoutRef.current = setTimeout(() => {
         if (scanSessionRef.current === sessionId) {
           setError("Barcode tidak terdeteksi. Silakan isi manual.");
@@ -93,7 +99,6 @@ export default function BarcodeScanInput({
     }
   };
 
-  /* ================= STOP SCAN ================= */
   const stopScan = () => {
     scanSessionRef.current = 0;
 
@@ -113,8 +118,8 @@ export default function BarcodeScanInput({
     setIsScanning(false);
   };
 
-  /* ================= REMOVE ================= */
   const handleRemove = () => {
+    if (disabled) return;
     stopScan();
     setResult(null);
     setManualValue("");
@@ -126,7 +131,11 @@ export default function BarcodeScanInput({
   }, []);
 
   return (
-    <div className="w-full flex flex-col gap-3 text-white">
+    <div
+      className={`w-full flex flex-col gap-3 text-white ${
+        disabled ? "opacity-50" : ""
+      }`}
+    >
       {!error && (
         <>
           <p>
@@ -135,9 +144,12 @@ export default function BarcodeScanInput({
 
           <button
             type="button"
+            disabled={disabled}
             onClick={startScan}
-            className="bg-input rounded-lg border-2 border-dashed p-4
-            border-input-border hover:border-primary flex items-center justify-between"
+            className={`bg-input rounded-lg border-2 border-dashed p-4
+              border-input-border flex items-center justify-between
+              ${disabled ? "cursor-not-allowed" : "hover:border-primary"}
+            `}
           >
             {result ? (
               <div className="flex items-center gap-2">
@@ -154,7 +166,7 @@ export default function BarcodeScanInput({
         </>
       )}
 
-      {isScanning && (
+      {isScanning && !disabled && (
         <div className="relative w-full rounded-lg overflow-hidden border">
           <video
             ref={videoRef}
@@ -183,7 +195,9 @@ export default function BarcodeScanInput({
             maxLength={16}
             required
             reddot
+            disabled={disabled}
             onChange={(e) => {
+              if (disabled) return;
               setManualValue(e.target.value);
               onChange(e.target.value);
             }}
@@ -191,7 +205,8 @@ export default function BarcodeScanInput({
           <p className="text-red-500 text-xs">{error}</p>
         </>
       )}
-      {result && (
+
+      {result && !disabled && (
         <button
           type="button"
           onClick={handleRemove}
