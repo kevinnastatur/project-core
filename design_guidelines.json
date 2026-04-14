@@ -1,0 +1,102 @@
+{
+  "theme": "light",
+  "archetype": "Swiss & High-Contrast",
+  "typography": {
+    "headings": {
+      "font_family": "Cabinet Grotesk",
+      "classes": "font-bold tracking-tight text-gray-900",
+      "hierarchy": {
+        "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter",
+        "h2": "text-2xl sm:text-3xl lg:text-4xl tracking-tight",
+        "h3": "text-xl sm:text-2xl",
+        "h4": "text-lg sm:text-xl"
+      }
+    },
+    "body": {
+      "font_family": "Inter",
+      "classes": "text-base text-gray-700 leading-relaxed"
+    },
+    "labels": {
+      "classes": "uppercase text-xs tracking-[0.2em] font-medium text-gray-500"
+    }
+  },
+  "colors": {
+    "primary_brand": "#002FA7",
+    "primary_brand_hover": "#002585",
+    "surface": {
+      "background": "#F9F9FB",
+      "card": "#FFFFFF",
+      "glass": "bg-white/70 backdrop-blur-xl border border-white/40 shadow-sm"
+    },
+    "text": {
+      "main": "#111827",
+      "muted": "#6B7280",
+      "inverse": "#FFFFFF"
+    },
+    "state": {
+      "danger": "#FF3B30",
+      "warning": "#FFCC00",
+      "success": "#34C759",
+      "info": "#007AFF"
+    },
+    "border": "#E5E7EB"
+  },
+  "layout_and_spacing": {
+    "dashboard_grid": {
+      "base": "grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6",
+      "span_logic": {
+        "summary_widget": "col-span-1",
+        "primary_chart": "col-span-2 row-span-2 md:col-span-3",
+        "feed_list": "col-span-1 row-span-2"
+      }
+    },
+    "spacing_scale": "p-4, p-6, p-8. Containers with borders MUST have internal padding (p-6 minimum) to prevent text collision.",
+    "alignment": "Mobile-First. Headings center-aligned only if required for balance. Lists, forms, dense content MUST be left-aligned."
+  },
+  "components": {
+    "cards": "Subtle roundness (max 8px border-radius / rounded-lg). 1px solid border (#E5E7EB), flat background. Hover: slight lift (-translate-y-1) and shadow-lg.",
+    "buttons": "Sharp or slightly rounded (rounded-md). High contrast text. Hover: distinct lighter hue of active state color.",
+    "inputs": "Shadcn Input heavily customized. Focus state: focus:ring-2 focus:ring-blue-300 focus:border-blue-500.",
+    "tables": "Shadcn DataTable. Dense spacing, clear column headers, hover state on rows (bg-gray-50). F-pattern visual hierarchy.",
+    "modals": "Use glassmorphism overlay (bg-black/60 backdrop-blur-sm) with flat solid white surface for the modal content."
+  },
+  "media": {
+    "image_urls": [
+      {
+        "url": "https://images.unsplash.com/photo-1775127458596-27b02d434deb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1Nzh8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGNvcnBvcmF0ZSUyMGJ1aWxkaW5nJTIwZ2xhc3MlMjBhcmNoaXRlY3R1cmV8ZW58MHx8fHwxNzc2MTQ0Njk3fDA&ixlib=rb-4.1.0&q=85",
+        "category": "hero_background",
+        "description": "Abstract glass architecture for Auth pages split-screen background."
+      },
+      {
+        "url": "https://images.pexels.com/photos/14589344/pexels-photo-14589344.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "category": "user_avatar",
+        "description": "Professional corporate headshot portrait for B2B/Admin Profile."
+      },
+      {
+        "url": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwyfHxhYnN0cmFjdCUyMGRhdGElMjB2aXN1YWxpemF0aW9uJTIwZGFzaGJvYXJkJTIwZ3JhcGh8ZW58MHx8fHwxNzc2MTQ0NzIxfDA&ixlib=rb-4.1.0&q=85",
+        "category": "dashboard_placeholder",
+        "description": "Placeholder for analytics graphs in empty states."
+      }
+    ],
+    "icons": "lucide-react"
+  },
+  "motion": {
+    "transitions": "transition-transform 0.2s ease, opacity 0.2s ease",
+    "interactions": "Hover states on all interactive elements. Enter animations staggered for list items."
+  },
+  "accessibility": {
+    "contrast": "APCA standard or WCAG AA (4.5:1). Never use gray-on-gray for text.",
+    "test_ids": "All interactive elements MUST include data-testid attributes (e.g., data-testid='login-form-submit-button').",
+    "focus_management": "Visible focus rings required on all form controls."
+  },
+  "instructions_to_main_agent": [
+    "Build the Next.js 14+ App Router frontend using .js (JSX) extensions. Do not use .tsx files.",
+    "Implement the triple Auth system (Admin, B2B, B2C), using Next.js route groups (e.g., (auth), (dashboard)).",
+    "Develop Users Management (CRUD) and Roles Management (RBAC Permission Tree).",
+    "Dashboard must follow the 'F-pattern' layout hierarchy, reserving the top-left for the North Star Metric (e.g., headcount, retention).",
+    "Ensure the layout relies on Shadcn/ui + Tailwind CSS with the styling overridden to match this JSON's 'Swiss & High-Contrast' archetype.",
+    "Do NOT use 'Inter' for headings. Use 'Cabinet Grotesk' or similar Display/Sans-Serif for authority. Use 'Inter' strictly for body text.",
+    "Always set explicit text color on hover (e.g., hover:bg-gray-900 hover:text-white).",
+    "Load images strictly from the provided 'media' object URLs. No standard placeholder services."
+  ]
+}
