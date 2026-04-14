@@ -3,7 +3,7 @@ const cors = require('cors')
 const helmet = require('helmet')
 const compression = require('compression')
 const morgan = require('morgan')
-const { createWriteStream } = require('fs')
+const { createWriteStream, mkdirSync, existsSync } = require('fs')
 const logConfig = require('./config/log')
 const corsConfig = require('./config/cors')
 const helmetConfig = require('./config/helmet')
@@ -13,6 +13,14 @@ const hpp = require('hpp')
 const xssMiddleware = require('./middleware/xss.middleware')
 
 require('dotenv').config()
+
+// Ensure log and storage directories exist before Morgan or static middleware mounts
+if (!existsSync('./client/storage')) {
+  mkdirSync('./client/storage', { recursive: true })
+}
+if (!existsSync('./client/storage/public')) {
+  mkdirSync('./client/storage/public', { recursive: true })
+}
 
 const routes = require('./routes')
 
