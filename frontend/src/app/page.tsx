@@ -1,100 +1,112 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { Database, ArrowRight, Users, Shield, BarChart3 } from 'lucide-react';
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+    <div className="min-h-screen bg-[#F9F9FB]">
+      {/* Hero */}
+      <div className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#002FA7]/5 via-transparent to-transparent" />
+        <div className="relative mx-auto max-w-6xl px-6 py-20">
+          <nav className="mb-20 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#002FA7]">
+                <Database className="h-5 w-5 text-white" />
+              </div>
+              <span className="font-heading text-xl font-bold tracking-tight text-[#111827]">
+                HR Analytics
+              </span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/login"
+                data-testid="home-login-link"
+                className="rounded-lg px-4 py-2 text-sm font-medium text-[#6B7280] hover:text-[#111827] transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/register"
+                data-testid="home-register-link"
+                className="rounded-lg bg-[#002FA7] px-4 py-2 text-sm font-medium text-white hover:bg-[#002585] transition-colors"
+              >
+                Get Started
+              </Link>
+            </div>
+          </nav>
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+          <div className="max-w-3xl">
+            <p className="mb-4 text-xs uppercase tracking-[0.25em] font-medium text-[#002FA7]">
+              HR Analytics Platform
+            </p>
+            <h1 className="font-heading text-5xl font-bold tracking-tighter text-[#111827] sm:text-6xl lg:text-7xl">
+              People data,
+              <br />
+              <span className="text-[#002FA7]">amplified.</span>
+            </h1>
+            <p className="mt-6 max-w-xl text-lg text-[#6B7280] leading-relaxed">
+              Unified HR analytics and reporting system. Manage users, roles, permissions,
+              and gain insights across your entire organization.
+            </p>
+            <div className="mt-10 flex flex-wrap gap-4">
+              <Link
+                href="/admin/login"
+                data-testid="home-admin-login"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#002FA7] px-6 py-3 text-sm font-medium text-white hover:bg-[#002585] transition-all duration-200 hover:-translate-y-0.5 shadow-sm hover:shadow-lg"
+              >
+                Admin Dashboard <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link
+                href="/b2b/login"
+                data-testid="home-b2b-login"
+                className="inline-flex items-center gap-2 rounded-lg border border-[#E5E7EB] bg-white px-6 py-3 text-sm font-medium text-[#111827] hover:bg-[#F9F9FB] transition-all duration-200 hover:-translate-y-0.5"
+              >
+                B2B Portal <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+      </div>
+
+      {/* Features */}
+      <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              icon: Users,
+              title: 'User Management',
+              desc: 'Complete CRUD operations for managing employees, partners, and administrators.',
+            },
+            {
+              icon: Shield,
+              title: 'Role-Based Access',
+              desc: 'Granular RBAC with permission trees. Control who sees and does what.',
+            },
+            {
+              icon: BarChart3,
+              title: 'HR Reports',
+              desc: 'Analytics dashboards with real-time insights on workforce metrics.',
+            },
+          ].map((feature) => (
+            <div
+              key={feature.title}
+              className="group rounded-lg border border-[#E5E7EB] bg-white p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+            >
+              <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-[#002FA7]/10">
+                <feature.icon className="h-5 w-5 text-[#002FA7]" />
+              </div>
+              <h3 className="font-heading text-lg font-semibold text-[#111827]">{feature.title}</h3>
+              <p className="mt-2 text-sm text-[#6B7280] leading-relaxed">{feature.desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Footer */}
+      <footer className="border-t border-[#E5E7EB] px-6 py-8">
+        <div className="mx-auto max-w-6xl text-center text-sm text-[#6B7280]">
+          HR Analytics &copy; {new Date().getFullYear()}. All rights reserved.
+        </div>
       </footer>
     </div>
   );
