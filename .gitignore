@@ -216,10 +216,11 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/node,linux,macos,windows
-/generated/prisma
-
 /client/storage/*
--e 
+
+# Test output artifacts
+test_reports/
+
 # Environment and credential files
 .env
 .env.*

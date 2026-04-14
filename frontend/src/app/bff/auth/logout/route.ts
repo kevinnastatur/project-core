@@ -6,14 +6,18 @@ const REFRESH_TOKEN_COOKIE = process.env.REFRESH_TOKEN_COOKIE_NAME || 'hr_refres
 
 export async function POST(request: NextRequest) {
   try {
+    const accessToken = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
     const refreshToken = request.cookies.get(REFRESH_TOKEN_COOKIE)?.value;
 
-    if (refreshToken) {
+    if (refreshToken && accessToken) {
       try {
         await fetch(`${API_BASE_URL}/api/v1/auth/logout`, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: refreshToken }),
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${accessToken}`,
+          },
+          body: JSON.stringify({ refreshToken }),
         });
       } catch {
         // Best-effort logout on Express side
