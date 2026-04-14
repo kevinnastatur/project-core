@@ -62,7 +62,7 @@ class AuthService {
     return { user, token }
   }
 
-  async login(email, password) {
+  async login(email, password, clientType = null) {
     const user = await authRepository.findUserByEmail(email)
 
     if (!user) {
@@ -71,6 +71,11 @@ class AuthService {
 
     if (!user.isEmailVerified) {
       throw new AppError('Email not verified', 403)
+    }
+
+    // Validate clientType against user's actual userType if provided
+    if (clientType && user.role?.userType !== clientType) {
+      throw new AppError('Invalid email or password', 401)
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
@@ -91,7 +96,17 @@ class AuthService {
       ),
     })
 
-    return { accessToken, refreshToken }
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        userType: user.role?.userType ?? null,
+        role: user.role?.slug ?? null,
+      },
+    }
   }
 
   async refreshToken(token) {
@@ -106,7 +121,7 @@ class AuthService {
       throw new AppError('Refresh token expired', 401)
     }
 
-    const accessToken = generateAccessToken({ id: record.userId })
+    const accessToken = generateAccessToken(record.user)
 
     return { accessToken }
   }

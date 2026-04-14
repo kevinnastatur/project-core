@@ -6,6 +6,11 @@ class ProfileRepository {
       where: {
         id: userId,
       },
+      include: {
+        role: {
+          select: { slug: true, userType: true, access: true },
+        },
+      },
     })
   }
 

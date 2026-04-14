@@ -12,11 +12,19 @@
 require('dotenv').config()
 module.exports = {
   origin: function (origin, callback) {
-    const allowedOrigins = [/^http:\/\/localhost:\d+$/]
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',')
+      : []
+
+    // Always allow localhost in development
+    if (process.env.NODE_ENV !== 'production') {
+      allowedOrigins.push(/^http:\/\/localhost:\d+$/)
+    }
+
     if (
       !origin ||
       allowedOrigins.some((o) =>
-        typeof o === 'string' ? o === origin : o.test(origin),
+        o instanceof RegExp ? o.test(origin) : o.trim() === origin,
       )
     ) {
       callback(null, true)

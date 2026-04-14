@@ -8,6 +8,11 @@ class AuthRepository {
         email: email,
         deletedAt: null,
       },
+      include: {
+        role: {
+          select: { id: true, slug: true, userType: true },
+        },
+      },
     })
   }
 
@@ -27,6 +32,16 @@ class AuthRepository {
     return await prisma.refreshToken.findFirst({
       where: {
         token: token,
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            role: {
+              select: { id: true, slug: true, userType: true },
+            },
+          },
+        },
       },
     })
   }

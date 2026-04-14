@@ -4,6 +4,7 @@ function generateAccessToken(user) {
   return jwt.sign(
     {
       sub: user.id,
+      userType: user.role?.userType ?? null,
     },
     process.env.JWT_ACCESS_SECRET,
     {

@@ -19,8 +19,12 @@ class AuthController {
 
   async login(req, res, next) {
     try {
-      const tokens = await authService.login(req.body.email, req.body.password)
-      response(res, tokens, 'Login successful')
+      const result = await authService.login(
+        req.body.email,
+        req.body.password,
+        req.body.clientType,
+      )
+      response(res, result, 'Login successful')
     } catch (err) {
       next(err)
     }
@@ -64,7 +68,7 @@ class AuthController {
 
   async logout(req, res, next) {
     try {
-      await authService.logout(req.body.token)
+      await authService.logout(req.body.refreshToken)
       response(res, null, 'Logged out successfully')
     } catch (err) {
       next(err)
